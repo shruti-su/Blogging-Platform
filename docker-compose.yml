@@ -1,0 +1,32 @@
+services:
+  client:
+    build: ./client
+    ports:
+      - "5300:5300"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    env_file:
+      - ./client/.env
+  server:
+    build: ./server
+    ports:
+      - "5500:5500"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    env_file:
+      - ./server/.env
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+      # - ./server/mongo-init:/docker-entrypoint-initdb.d
+volumes:
+  mongo-data:

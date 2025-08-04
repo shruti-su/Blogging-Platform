@@ -9,10 +9,8 @@ export default defineConfig({
     alias: [{ find: "@", replacement: "/src" }],
   },
   server: {
-    allowedHosts: [
-      'excel-analytics-docker.onrender.com'
-    ],
+
     port: 5300,
-    
+
   },
 }); 

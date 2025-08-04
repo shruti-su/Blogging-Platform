@@ -39,7 +39,10 @@ export function Sidenav({ brandImg, brandName, routes }) {
             className="absolute top-0 right-0 grid rounded-tl-none rounded-br-none xl:hidden"
             onClick={() => setOpenSidenav(dispatch, false)}
           >
-            <XMarkIcon strokeWidth={2.5} className="w-5 h-5 text-white" />
+            <XMarkIcon
+              strokeWidth={3}
+              className="w-6 h-6 text-black dark:text-white"
+            />
           </IconButton>
         </div>
         <div className="m-4">

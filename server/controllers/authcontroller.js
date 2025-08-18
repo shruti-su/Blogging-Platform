@@ -162,6 +162,35 @@ exports.signup = async (req, res) => {
     }
 };
 
+exports.verifyOtp = async (req, res) => {
+    const { email, otp } = req.body;
+    try {
+        if (email && otp) {
+            const otpEntry = await OTP.findOne({ email, otp });
+            if (!otpEntry) {
+                res.status(400).json({ warning: 'Invalid OTP' });
+            }
+            else {
+                if (otpEntry.createdAt.getTime() + 5 * 60 * 1000 < new Date().getTime()) {
+                    res.status(400).json({ warning: 'OTP has expired' });
+                } else {
+                    const user = await User.findOne({ email });
+                    if (user) {
+                        user.isActive = true;
+                        await user.save();
+                    }
+                    await otpEntry.deleteOne();
+                    res.status(200).json({ success: true, message: 'OTP verified successfully!' });
+
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        res.status(500).json({ error: 'Failed to verify OTP' });
+    }
+}
+
 exports.googleLogin = async (req, res) => {
     const { email, name } = req.body;
 

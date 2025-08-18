@@ -28,6 +28,7 @@ router.post('/signup',
 );
 router.post("/google-login", authcontroller.googleLogin);
 router.post("/forgot-password", authcontroller.forgotPassword);
+router.post("/verify-otp", authcontroller.verifyOtp);
 
 
 // router.post("/forgot-password", authcontroller.forgotPassword);

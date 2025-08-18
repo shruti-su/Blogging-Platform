@@ -1,53 +1,26 @@
 import React, { useState } from "react";
-import {
-  Input,
-  Checkbox,
-  Button,
-  Typography,
-} from "@material-tailwind/react";
+import { Button, Typography, Checkbox } from "@material-tailwind/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/auth/AuthContext";
 import AuthService from "@/services/api/auth";
 import { signInWithPopup, auth, provider } from "@/firebase";
 import { motion } from "framer-motion";
-import { InputText } from 'primereact/inputtext';
-import { FloatLabel } from 'primereact/floatlabel';
-import { Password } from 'primereact/password';
+import { InputText } from "primereact/inputtext";
+import { FloatLabel } from "primereact/floatlabel";
+import { Password } from "primereact/password";
 
 export function SignUp() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15,
-      },
-    },
-  };
 
   const loginWithGoogle = async () => {
     try {
@@ -64,7 +37,8 @@ export function SignUp() {
     }
   };
 
-  const handleSignUp = async (event) => {
+  // Step 1: Send OTP (this is signup)
+  const handleSendOtp = async (event) => {
     event.preventDefault();
     setError("");
     setSuccess("");
@@ -81,195 +55,204 @@ export function SignUp() {
       setError("Password must be at least 6 characters.");
       return;
     }
+
     try {
-      const response = await AuthService.signUpUser({ name, email, password });
-      if (response.error || response.warning) {
-        setError(response.error || response.warning || "Signup failed");
-      } else {
-        setSuccess("Registration successful! Please sign in.");
-        login(response.token);
-        navigate("/dashboard/home");
-      }
+      const res = await AuthService.signUpUser({ name, email, password });
+      setStep(2);
+      setSuccess("OTP sent to your email!");
     } catch (err) {
-      setError("An error occurred. Please try again later.");
+      setError(err?.response?.data?.warning || "Failed to send OTP. Please try again.");
+    }
+  };
+
+  // Step 2: Verify OTP
+  const handleVerifyOtp = async (event) => {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!otp) {
+      setError("Please enter the OTP.");
+      return;
+    }
+
+    try {
+      const res = await AuthService.verifyOtp({ email, otp });
+      login(res.token);
+      navigate("/dashboard/home");
+    } catch (err) {
+      setError("OTP verification failed. Please try again.");
     }
   };
 
   return (
-    <motion.section
-      className="flex flex-col items-center justify-center min-h-screen py-8 px-4 bg-[url('/img/sl_122221_47450_06.jpg')] bg-cover bg-center"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <motion.div
-        variants={itemVariants}
-        className="w-full max-w-md lg:max-w-lg rounded-xl overflow-hidden shadow-2xl shadow-blue-200 bg-white p-6 md:p-8"
-      >
-        <div className="text-center mb-8">
-          <motion.div variants={itemVariants}>
-            <Typography variant="h2" className="mb-2 font-extrabold text-gray-800">
-              Create an Account
-            </Typography>
-          </motion.div>
-          <motion.div variants={itemVariants}>
-            <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal text-gray-600">
-              Enter your details to register.
-            </Typography>
-          </motion.div>
-        </div>
-        <form className="w-full mx-auto" onSubmit={handleSignUp}>
-          <div className="flex flex-col gap-6 mb-4">
-            <motion.div variants={itemVariants}>
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
+      {/* Left side */}
+      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-purple-600 to-blue-500 items-center justify-center text-white p-10">
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <h1 className="text-4xl font-bold mb-4">Join Our Blogging Community</h1>
+          <p className="text-lg">
+            Share your thoughts, ideas, and stories with the world.
+          </p>
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2921/2921822.png"
+            alt="Blog Illustration"
+            className="mx-auto mt-8 w-64"
+          />
+        </motion.div>
+      </div>
+
+      {/* Right side */}
+      <div className="flex flex-1 items-center justify-center p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8"
+        >
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">
+            {step === 1 ? "Create an Account" : "Enter OTP"}
+          </h2>
+
+          {/* Step 1: Registration Form */}
+          {step === 1 && (
+            <form className="space-y-5" onSubmit={handleSendOtp}>
               <FloatLabel>
                 <InputText
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 border rounded-md"
                 />
                 <label htmlFor="name">Your Name</label>
               </FloatLabel>
-            </motion.div>
 
-            <motion.div variants={itemVariants}>
               <FloatLabel>
                 <InputText
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 border rounded-md"
                 />
                 <label htmlFor="email">Your Email</label>
               </FloatLabel>
-            </motion.div>
 
-            <motion.div variants={itemVariants}>
               <FloatLabel>
                 <Password
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full"
-                  inputClassName="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-indigo-500"
+                  inputClassName="w-full px-3 py-2 border rounded-md"
                   feedback={false}
                 />
                 <label htmlFor="password">Password</label>
               </FloatLabel>
-            </motion.div>
 
-            <motion.div variants={itemVariants}>
               <FloatLabel>
                 <Password
                   id="confirm-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full"
-                  inputClassName="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-indigo-500"
+                  inputClassName="w-full px-3 py-2 border rounded-md"
                   feedback={false}
                 />
                 <label htmlFor="confirm-password">Confirm Password</label>
               </FloatLabel>
-            </motion.div>
-          </div>
 
-          {error && (
-            <motion.div variants={itemVariants}>
-              <Typography variant="small" color="red" className="mb-4 text-center font-medium">
-                {error}
-              </Typography>
-            </motion.div>
-          )}
-          {success && (
-            <motion.div variants={itemVariants}>
-              <Typography variant="small" color="green" className="mb-4 text-center font-medium">
-                {success}
-              </Typography>
-            </motion.div>
-          )}
-
-          <motion.div variants={itemVariants}>
-            <Checkbox
-              label={
-                <Typography variant="small" color="gray" className="flex items-center font-medium text-gray-700">
-                  I agree the&nbsp;
-                  <a href="#" className="text-indigo-600 underline hover:text-indigo-800">Terms and Conditions</a>
+              {error && (
+                <Typography variant="small" color="red" className="mb-2 text-center font-medium">
+                  {error}
                 </Typography>
-              }
-              containerProps={{ className: "-ml-2.5" }}
-            />
-          </motion.div>
+              )}
+              {success && (
+                <Typography variant="small" color="green" className="mb-2 text-center font-medium">
+                  {success}
+                </Typography>
+              )}
 
-          <motion.div variants={itemVariants}>
-            <Button
-              className="mt-6 bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg transform hover:scale-[1.01] transition-all duration-200 text-white"
-              fullWidth
-              type="submit"
-            >
-              Register Now
-            </Button>
-          </motion.div>
+              <Checkbox
+                label={
+                  <Typography variant="small" color="gray" className="flex items-center font-medium text-gray-700">
+                    I agree to the&nbsp;
+                    <a href="#" className="text-indigo-600 underline">
+                      Terms and Conditions
+                    </a>
+                  </Typography>
+                }
+              />
 
-          <motion.div variants={itemVariants} className="mt-8 space-y-4">
-            <Button
-              size="lg"
-              color="white"
-              className="flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:scale-[1.01] transition-all duration-200 text-gray-700 border border-blue-gray-200 bg-white hover:bg-gray-50"
-              fullWidth
-              onClick={loginWithGoogle}
-            >
-              <svg
-                width="17"
-                height="16"
-                viewBox="0 0 17 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+              <Button className="bg-indigo-600 hover:bg-indigo-700 text-white" fullWidth type="submit">
+                Send OTP
+              </Button>
+
+              <Button
+                size="lg"
+                color="white"
+                className="flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600"
+                fullWidth
+                onClick={loginWithGoogle}
               >
-                <g clipPath="url(#clip0_1156_824)">
-                  <path
-                    d="M16.3442 8.18429C16.3442 7.64047 16.3001 7.09371 16.206 6.55872H8.66016V9.63937H12.9813C12.802 10.6329 12.2258 11.5119 11.3822 12.0704V14.0693H13.9602C15.4741 12.6759 16.3442 10.6182 16.3442 8.18429Z"
-                    fill="#4285F4"
-                  />
-                  <path
-                    d="M8.65974 16.0006C10.8174 16.0006 12.637 15.2922 13.9627 14.0693L11.3847 12.0704C10.6675 12.5584 9.7415 12.8347 8.66268 12.8347C6.5756 12.8347 4.80598 11.4266 4.17104 9.53357H1.51074V11.5942C2.86882 14.2956 5.63494 16.0006 8.65974 16.0006Z"
-                    fill="#34A853"
-                  />
-                  <path
-                    d="M4.16852 9.53356C3.83341 8.53999 3.83341 7.46411 4.16852 6.47054V4.40991H1.51116C0.376489 6.67043 0.376489 9.33367 1.51116 11.5942L4.16852 9.53356Z"
-                    fill="#FBBC04"
-                  />
-                  <path
-                    d="M8.65974 3.16644C9.80029 3.1488 10.9026 3.57798 11.7286 4.36578L14.0127 2.08174C12.5664 0.72367 10.6469 -0.0229773 8.65974 0.000539111C5.63494 0.000539111 2.86882 1.70548 1.51074 4.40987L4.1681 6.4705C4.8001 4.57449 6.57266 3.16644 8.65974 3.16644Z"
-                    fill="#EA4335"
-                  />
-                </g>
-                <defs>
-                  <clipPath id="clip0_1156_824">
-                    <rect
-                      width="16"
-                      height="16"
-                      fill="white"
-                      transform="translate(0.5)"
-                    />
-                  </clipPath>
-                </defs>
-              </svg>
-              <span>Sign in With Google</span>
-            </Button>
-          </motion.div>
+                <img
+                  src="https://www.svgrepo.com/show/475656/google-color.svg"
+                  alt="Google"
+                  className="w-5 h-5"
+                />
+                Sign up with Google
+              </Button>
 
-          <motion.div variants={itemVariants}>
-            <Typography variant="paragraph" className="mt-4 font-medium text-center text-blue-gray-500">
-              Already have an account?
-              <Link to="/auth/sign-in" className="ml-1 text-indigo-600 hover:text-indigo-800">
-                Sign in
-              </Link>
-            </Typography>
-          </motion.div>
-        </form>
-      </motion.div>
-    </motion.section>
+              <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+                Already have an account?{" "}
+                <Link to="/auth/sign-in" className="text-blue-500 hover:underline">
+                  Log in
+                </Link>
+              </p>
+            </form>
+          )}
+
+          {/* Step 2: OTP Form */}
+          {step === 2 && (
+            <form className="space-y-5" onSubmit={handleVerifyOtp}>
+              <FloatLabel>
+                <InputText
+                  id="otp"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+                <label htmlFor="otp">Enter OTP</label>
+              </FloatLabel>
+
+              {error && (
+                <Typography variant="small" color="red" className="mb-2 text-center font-medium">
+                  {error}
+                </Typography>
+              )}
+              {success && (
+                <Typography variant="small" color="green" className="mb-2 text-center font-medium">
+                  {success}
+                </Typography>
+              )}
+
+              <Button className="bg-green-600 hover:bg-green-700 text-white" fullWidth type="submit">
+                Verify & Register
+              </Button>
+
+              <Button variant="outlined" fullWidth onClick={() => setStep(1)}>
+                Back
+              </Button>
+            </form>
+          )}
+        </motion.div>
+      </div>
+    </div>
   );
 }
 

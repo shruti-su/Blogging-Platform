@@ -77,46 +77,83 @@ exports.signup = async (req, res) => {
     try {
         // Check if user already exists (by email or username)
         let user = await User.findOne({ $or: [{ email }, { name }] });
-        if (user) {
+        if (user && user.isActive == true) {
             return res.status(400).json({ warning: 'User with that email or username already exists' });
         }
 
+        if (!user) {
+            // Create new user instance
+            user = new User({
+                name,
+                email,
+                password, // Password will be hashed below
+                lastLogin: new Date(), // Set last login time
+                isActive: false, // Default to active
+            });
 
-        // Create new user instance
-        user = new User({
-            name,
+            // Hash password
+            const salt = await bcrypt.genSalt(10); // Generate a salt
+            user.password = await bcrypt.hash(password, salt); // Hash the password with the salt
+
+            // Save user to the database
+            await user.save();
+        }
+        else {
+            // If user exists but is not active, update the existing user
+            user.name = name;
+            user.email = email;
+            user.password = await bcrypt.hash(password, await bcrypt.genSalt(10)); // Hash the new password
+            user.lastLogin = new Date(); // Update last login time
+            user.isActive = false; // Set to inactive
+            await user.save();
+        }
+        // // Create and return JWT
+        // const payload = {
+        //     user: {
+        //         id: user.id,
+        //         name: user.name,
+        //         email: user.email,
+        //         role: "user", // Include role in the payload
+        //     },
+        // };
+        // try {
+        //     const token = jwt.sign(
+        //         payload,
+        //         process.env.JWT_SECRET,
+        //         { expiresIn: '1d' }
+        //     );
+        //     res.json({ token, msg: 'User registered successfully!' });
+        // } catch (err) {
+        //     console.error('❌ Error during signup:', err);
+        //     res.status(500).json({ error: 'JWT signing failed' });
+        // }
+        // Generate OTP (One Time Password)
+        const otp = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit OTP
+        // Save OTP to the database
+        const otpEntry = new OTP({
             email,
-            password, // Password will be hashed below
-            lastLogin: new Date() // Set last login time
-
+            otp,
         });
-
-        // Hash password
-        const salt = await bcrypt.genSalt(10); // Generate a salt
-        user.password = await bcrypt.hash(password, salt); // Hash the password with the salt
-
-        // Save user to the database
-        await user.save();
-
-        // Create and return JWT
-        const payload = {
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: "user", // Include role in the payload
-            },
-        };
+        await otpEntry.save();
+        // Send OTP via email
         try {
-            const token = jwt.sign(
-                payload,
-                process.env.JWT_SECRET,
-                { expiresIn: '1d' }
-            );
-            res.json({ token, msg: 'User registered successfully!' });
-        } catch (err) {
-            console.error('❌ Error during signup:', err);
-            res.status(500).json({ error: 'JWT signing failed' });
+            // Define email options
+            const mailOptions = {
+                from: process.env.GMAIL, // Sender address (must be your Gmail address)
+                to: email, // Recipient email address
+                subject: "Registration Otp", // Subject line
+                text: "text", // Plain text body
+                html: `<h1>Registration Otp</h1><p>Your OTP is: <strong>${otp}</strong></p>` // HTML body (optional, can be used instead of or in addition to text)
+            };
+            // Send the email
+            const info = await transporter.sendMail(mailOptions);
+            console.log('Email sent: %s', info.messageId);
+            // You can log the preview URL for testing emails in development if you're not sending to a real address
+            // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+            res.status(200).json({ success: true, message: 'Email sent successfully!', messageId: info.messageId, });
+        } catch (error) {
+            console.error('Error sending email:', error);
+            res.status(500).json({ success: false, message: 'Failed to send email.', error: error.message });
         }
 
     } catch (err) {
@@ -164,7 +201,6 @@ exports.googleLogin = async (req, res) => {
                 email: user.email,
                 role: user.role, // Include role in the payload
                 lastLogin: new Date() // Set last login time
-
             },
         };
         const token = jwt.sign(

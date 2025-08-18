@@ -9,8 +9,7 @@ import {
 import Home from "/src/pages/dashboard/home";
 import { SignIn, SignUp, Forgotpassword } from "/src/pages/auth";
 import Upload from "./pages/dashboard/upload";
-import { Charts } from "./pages/dashboard";
-import FileRecords from "./pages/dashboard/file-records";
+import  ChooseBlogType  from "./pages/dashboard/choose-blogtype";
 import Unauthorised from "/src/pages/unauthorised/unauthorised";
 import AdminHome from "./pages/admin/AdminHome"; // Adjust the path as needed
 import UserManagement from "./pages/admin/user-management"; // Adjust the path as needed
@@ -25,7 +24,7 @@ export const routes = [
     pages: [
       {
         icon: <HomeIcon {...icon} />,
-        name: "dashboard",
+        name: "Explore",
         path: "/home",
         element: <Home />,
         sidebar: true,
@@ -52,16 +51,9 @@ export const routes = [
       },
       {
         icon: <TableCellsIcon {...icon} />,
-        name: "Charts",
-        path: "/charts",
-        element: <Charts />,
-        sidebar: false,
-      },
-      {
-        icon: <TableCellsIcon {...icon} />,
-        name: "File Records",
-        path: "/file-records",
-        element: <FileRecords />,
+        name: "Choose Blog Type",
+        path: "/choose-blogtype",
+        element: <ChooseBlogType />,
         sidebar: true,
       },
       

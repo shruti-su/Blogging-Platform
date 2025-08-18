@@ -21,13 +21,13 @@ export function Dashboard() {
   // console.log("Dashboard: `routes` prop:", routes);
 
   return (
-    <div className="bg-secondary dark:bg-secondary-dark">
+    <div className="bg-secondary dark:bg-secondary-dark min-h-screen ">
       {/* Sidenav component should receive the full routes or filtered ones for navigation */}
       <Sidenav
         routes={routes.filter((r) => r.layout === "dashboard")} // Pass only dashboard routes to Sidenav
       />
-      <div className="grid h-screen p-4 overflow-hidden xl:ml-56 grid-rows-12 ">
-        <div className="row-span-1 overflow-hidden">
+      <div className="grid p-4 xl:ml-56 ">
+        <div >
           <DashboardNavbar />
           {/* <Configurator /> */}
           {/* <IconButton
@@ -40,7 +40,7 @@ export function Dashboard() {
             <Cog6ToothIcon className="w-5 h-5" />
           </IconButton> */}
         </div>
-        <div className="overflow-auto row-span-11 ">
+        <div  >
           <Routes>
             {routes.map(({ layout, pages }) => {
               if (layout === "dashboard") {

@@ -9,7 +9,7 @@ import {
 import Home from "/src/pages/dashboard/home";
 import { SignIn, SignUp, Forgotpassword } from "/src/pages/auth";
 import Upload from "./pages/dashboard/upload";
-import  ChooseBlogType  from "./pages/dashboard/choose-blogtype";
+import ChooseBlogType from "./pages/dashboard/choose-blogtype";
 import Unauthorised from "/src/pages/unauthorised/unauthorised";
 import AdminHome from "./pages/admin/AdminHome"; // Adjust the path as needed
 import UserManagement from "./pages/admin/user-management"; // Adjust the path as needed
@@ -25,7 +25,7 @@ export const routes = [
       {
         icon: <HomeIcon {...icon} />,
         name: "Explore",
-        path: "/home",
+        path: "/",
         element: <Home />,
         sidebar: true,
       },
@@ -56,7 +56,6 @@ export const routes = [
         element: <ChooseBlogType />,
         sidebar: true,
       },
-      
     ],
   },
   {
@@ -65,7 +64,7 @@ export const routes = [
       {
         icon: <HomeIcon {...icon} />,
         name: "Admin Dashboard",
-        path: "/home",
+        path: "/",
         element: <AdminHome />,
         sidebar: true,
       },

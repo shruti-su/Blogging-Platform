@@ -28,7 +28,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
         <div className={`relative`}>
           <Link to="/" className="px-8 py-6 text-center">
             <Typography variant="h6" className="text-black dark:text-white ">
-              Excel Analytics
+              Blogging Platform
             </Typography>
           </Link>
           <IconButton

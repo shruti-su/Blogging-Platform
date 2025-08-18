@@ -49,9 +49,9 @@ export default function LandingPage() {
     try {
       if (isAuthenticated == true) {
         if (userRole() === "admin") {
-          navigate("/admin/home");
+          navigate("/admin/");
         } else if (userRole() === "user") {
-          navigate("/dashboard/home");
+          navigate("/dashboard/");
         } else {
           navigate("/auth/sign-in");
         }

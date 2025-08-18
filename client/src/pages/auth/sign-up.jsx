@@ -31,7 +31,7 @@ export function SignUp() {
         name: user.displayName,
       });
       login(response.token);
-      navigate("/dashboard/home");
+      navigate("/dashboard/");
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -61,7 +61,9 @@ export function SignUp() {
       setStep(2);
       setSuccess("OTP sent to your email!");
     } catch (err) {
-      setError(err?.response?.data?.warning || "Failed to send OTP. Please try again.");
+      setError(
+        err?.response?.data?.warning || "Failed to send OTP. Please try again."
+      );
     }
   };
 
@@ -79,7 +81,7 @@ export function SignUp() {
     try {
       const res = await AuthService.verifyOtp({ email, otp });
       login(res.token);
-      navigate("/dashboard/home");
+      navigate("/dashboard/");
     } catch (err) {
       setError("OTP verification failed. Please try again.");
     }
@@ -88,34 +90,36 @@ export function SignUp() {
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Left side */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-purple-600 to-blue-500 items-center justify-center text-white p-10">
+      <div className="items-center justify-center hidden w-1/2 p-10 text-white lg:flex bg-gradient-to-br from-purple-600 to-blue-500">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <h1 className="text-4xl font-bold mb-4">Join Our Blogging Community</h1>
+          <h1 className="mb-4 text-4xl font-bold">
+            Join Our Blogging Community
+          </h1>
           <p className="text-lg">
             Share your thoughts, ideas, and stories with the world.
           </p>
           <img
             src="https://cdn-icons-png.flaticon.com/512/2921/2921822.png"
             alt="Blog Illustration"
-            className="mx-auto mt-8 w-64"
+            className="w-64 mx-auto mt-8"
           />
         </motion.div>
       </div>
 
       {/* Right side */}
-      <div className="flex flex-1 items-center justify-center p-8">
+      <div className="flex items-center justify-center flex-1 p-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8"
+          className="w-full max-w-md p-8 bg-white shadow-lg dark:bg-gray-800 rounded-xl"
         >
-          <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">
+          <h2 className="mb-6 text-2xl font-bold text-center text-gray-900 dark:text-white">
             {step === 1 ? "Create an Account" : "Enter OTP"}
           </h2>
 
@@ -168,19 +172,31 @@ export function SignUp() {
               </FloatLabel>
 
               {error && (
-                <Typography variant="small" color="red" className="mb-2 text-center font-medium">
+                <Typography
+                  variant="small"
+                  color="red"
+                  className="mb-2 font-medium text-center"
+                >
                   {error}
                 </Typography>
               )}
               {success && (
-                <Typography variant="small" color="green" className="mb-2 text-center font-medium">
+                <Typography
+                  variant="small"
+                  color="green"
+                  className="mb-2 font-medium text-center"
+                >
                   {success}
                 </Typography>
               )}
 
               <Checkbox
                 label={
-                  <Typography variant="small" color="gray" className="flex items-center font-medium text-gray-700">
+                  <Typography
+                    variant="small"
+                    color="gray"
+                    className="flex items-center font-medium text-gray-700"
+                  >
                     I agree to the&nbsp;
                     <a href="#" className="text-indigo-600 underline">
                       Terms and Conditions
@@ -189,7 +205,11 @@ export function SignUp() {
                 }
               />
 
-              <Button className="bg-indigo-600 hover:bg-indigo-700 text-white" fullWidth type="submit">
+              <Button
+                className="text-white bg-indigo-600 hover:bg-indigo-700"
+                fullWidth
+                type="submit"
+              >
                 Send OTP
               </Button>
 
@@ -208,9 +228,12 @@ export function SignUp() {
                 Sign up with Google
               </Button>
 
-              <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+              <p className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
                 Already have an account?{" "}
-                <Link to="/auth/sign-in" className="text-blue-500 hover:underline">
+                <Link
+                  to="/auth/sign-in"
+                  className="text-blue-500 hover:underline"
+                >
                   Log in
                 </Link>
               </p>
@@ -231,17 +254,29 @@ export function SignUp() {
               </FloatLabel>
 
               {error && (
-                <Typography variant="small" color="red" className="mb-2 text-center font-medium">
+                <Typography
+                  variant="small"
+                  color="red"
+                  className="mb-2 font-medium text-center"
+                >
                   {error}
                 </Typography>
               )}
               {success && (
-                <Typography variant="small" color="green" className="mb-2 text-center font-medium">
+                <Typography
+                  variant="small"
+                  color="green"
+                  className="mb-2 font-medium text-center"
+                >
                   {success}
                 </Typography>
               )}
 
-              <Button className="bg-green-600 hover:bg-green-700 text-white" fullWidth type="submit">
+              <Button
+                className="text-white bg-green-600 hover:bg-green-700"
+                fullWidth
+                type="submit"
+              >
                 Verify & Register
               </Button>
 

@@ -24,18 +24,21 @@ export default function ChooseBlogType() {
       console.log("Selected Blog Type:", finalType);
       // Send to backend if needed
     }
-    navigate("/dashboard/home");
+    navigate("/dashboard/");
   };
 
   return (
-    <div className="flex items-center justify-center  p-6">
+    <div className="flex items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg max-w-md w-full"
+        className="w-full max-w-md p-8 bg-white shadow-lg dark:bg-gray-800 rounded-xl"
       >
-        <Typography variant="h5" className="mb-6 text-center text-gray-900 dark:text-white">
+        <Typography
+          variant="h5"
+          className="mb-6 text-center text-gray-900 dark:text-white"
+        >
           Which type of blog do you want to post?
         </Typography>
 
@@ -69,7 +72,7 @@ export default function ChooseBlogType() {
           <Button
             color="gray"
             variant="outlined"
-            onClick={() => navigate("/dashboard/home")}
+            onClick={() => navigate("/dashboard/")}
           >
             Skip
           </Button>

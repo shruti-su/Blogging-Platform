@@ -3,7 +3,6 @@ import { Button } from "@material-tailwind/react";
 import { useAuth } from "@/components/auth/AuthContext"; // Adjust the import path as necessary
 import { useNavigate } from "react-router-dom";
 
-
 function Unauthorised() {
   const { isAuthenticated, userRole } = useAuth(); // Destructure the login function from useAuth\
   const navigate = useNavigate();
@@ -11,9 +10,9 @@ function Unauthorised() {
     try {
       if (isAuthenticated == true) {
         if (userRole() === "admin") {
-          navigate("/admin/home");
+          navigate("/admin/");
         } else if (userRole() === "user") {
-          navigate("/dashboard/home");
+          navigate("/dashboard/");
         } else {
           navigate("/auth/sign-in");
         }

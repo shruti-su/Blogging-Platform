@@ -11,9 +11,9 @@ import { useAuth } from "@/components/auth/AuthContext"; // Adjust the import pa
 import AuthService from "@/services/api/auth"; // Import the AuthService for API calls
 import { signInWithPopup, auth, provider } from "@/firebase";
 import { motion } from "framer-motion"; // Import Framer Motion
-import { InputText } from 'primereact/inputtext';
-import { FloatLabel } from 'primereact/floatlabel';
-import { Password } from 'primereact/password';
+import { InputText } from "primereact/inputtext";
+import { FloatLabel } from "primereact/floatlabel";
+import { Password } from "primereact/password";
 
 export function SignIn() {
   const { login, userRole } = useAuth(); // Destructure the login function from useAuth
@@ -67,9 +67,9 @@ export function SignIn() {
         // 👉 Redirect based on role
         const role = userRole() || "user"; // fallback to 'user' if undefined
         if (role === "admin") {
-          navigate("/admin/home");
+          navigate("/admin/");
         } else {
-          navigate("/dashboard/home");
+          navigate("/dashboard/");
         }
       } else {
         // If simulated credentials don't match, set an error
@@ -79,8 +79,8 @@ export function SignIn() {
       // Catch any network errors or issues with the API call
       setError(
         err.response?.data?.msg ||
-        err.response?.data?.error ||
-        "An error occurred during sign-in. Please try again."
+          err.response?.data?.error ||
+          "An error occurred during sign-in. Please try again."
       );
       console.error(err);
     }
@@ -98,12 +98,11 @@ export function SignIn() {
         login(response.token);
         const role = userRole() || "user"; // fallback to 'user' if undefined
         if (role === "admin") {
-          navigate("/admin/home");
+          navigate("/admin/");
         } else {
-          navigate("/dashboard/home");
+          navigate("/dashboard/");
         }
       });
-
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -118,13 +117,12 @@ export function SignIn() {
     >
       <motion.div
         variants={itemVariants}
-        className="w-full max-w-md lg:max-w-lg rounded-xl overflow-hidden shadow-2xl shadow-blue-200" // Main container for image and form
+        className="w-full max-w-md overflow-hidden shadow-2xl lg:max-w-lg rounded-xl shadow-blue-200" // Main container for image and form
       >
-
-        <div className="p-6 md:p-8 bg-white rounded-b-xl">
+        <div className="p-6 bg-white md:p-8 rounded-b-xl">
           {" "}
           {/* Form container */}
-          <div className="text-center mb-8">
+          <div className="mb-8 text-center">
             <motion.div variants={itemVariants}>
               <Typography
                 variant="h2"
@@ -181,13 +179,13 @@ export function SignIn() {
                 <Typography
                   variant="small"
                   color="red"
-                  className="mb-4 text-center font-medium"
+                  className="mb-4 font-medium text-center"
                 >
                   {error}
                 </Typography>
               </motion.div>
             )}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+            <div className="flex flex-col items-center justify-between gap-4 mt-6 sm:flex-row">
               <motion.div variants={itemVariants}>
                 <Checkbox
                   label={
@@ -213,7 +211,11 @@ export function SignIn() {
                   variant="small"
                   className="font-medium text-gray-900"
                 >
-                  <a href="#" className="text-indigo-600 hover:text-indigo-800" onClick={() => navigate("/auth/forgot-password")}>
+                  <a
+                    href="#"
+                    className="text-indigo-600 hover:text-indigo-800"
+                    onClick={() => navigate("/auth/forgot-password")}
+                  >
                     Forgot Password
                   </a>
                 </Typography>

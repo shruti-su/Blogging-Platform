@@ -178,10 +178,29 @@ exports.verifyOtp = async (req, res) => {
                     if (user) {
                         user.isActive = true;
                         await user.save();
+                        await otpEntry.deleteOne();
+                        const payload = {
+                            user: {
+                                id: user.id,
+                                name: user.name,
+                                email: user.email,
+                                role: user.role, // Include role in the payload
+                            },
+                        };
+                        try {
+                            const token = jwt.sign(
+                                payload,
+                                process.env.JWT_SECRET,
+                                { expiresIn: '1d' }
+                            );
+                            res.json({ token, msg: 'User registered successfully!' });
+                        } catch (err) {
+                            console.error('❌ Error during signup:', err);
+                            res.status(500).json({ error: 'JWT signing failed' });
+                        }
+                    } else {
+                        res.status(500).json({ error: "user not found" })
                     }
-                    await otpEntry.deleteOne();
-                    res.status(200).json({ success: true, message: 'OTP verified successfully!' });
-
                 }
             }
         }

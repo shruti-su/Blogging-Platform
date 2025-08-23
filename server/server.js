@@ -1,9 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const userRoutes = require('./routes/user');
 const dotenv = require('dotenv');
 const cors = require('cors'); // <--- ADD THIS LINE: Import the cors package
-const auth = require('./routes/auth'); // <--- ADD THIS LINE: Import the auth routes
 dotenv.config();
 
 const app = express();
@@ -39,7 +37,7 @@ mongoose.connect(mongoURI, clientOptions)
 // --- End MongoDB Connection Setup ---
 
 // add all the routes here 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // Increase payload size limit for base64 image uploads
 // <--- ADD CORS CONFIGURATION HERE ---
 // Option 1: Allow all origins (good for quick development, less secure for production)
 app.use(cors());
@@ -53,18 +51,16 @@ app.use(cors());
 // };
 // app.use(cors(corsOptions));
 // <--- END CORS CONFIGURATION ---
-app.get('/',async(req, res) => {
+app.get('/', async (req, res) => {
     res.send(`🚀 Server is running on http://localhost:${PORT}`);
 });
 
-app.use('/auth', auth); // <--- ADD THIS LINE: Use the auth routes
-app.use('/api', userRoutes);
-
+app.use('/auth', require('./routes/auth')); // <--- ADD THIS LINE: Use the auth routes
+app.use('/api', require('./routes/user'));
+app.use('/blogs', require('./routes/blog')); // <--- ADD THIS LINE: Use the blogs routes
 
 
 
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
-
-

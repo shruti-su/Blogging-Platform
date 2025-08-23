@@ -180,7 +180,7 @@ export function SignUp() {
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 pl-10 bg-white border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
+                  className="w-full px-3 py-2 bg-white border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                 />
                 <label htmlFor="name" className="dark:text-gray-300">
                   Your Name
@@ -193,7 +193,7 @@ export function SignUp() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 pl-10 bg-white border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
+                  className="w-full px-3 py-2 bg-white border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
                 />
                 <label htmlFor="email" className="dark:text-gray-300">
                   Your Email

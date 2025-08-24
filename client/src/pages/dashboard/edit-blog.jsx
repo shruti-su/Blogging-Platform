@@ -2,6 +2,9 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button"; // optional for nicer buttons
+
 function EditBlog() {
   const location = useLocation();
   const { title: initialTitle, category: initialCategory } =
@@ -11,6 +14,9 @@ function EditBlog() {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState(initialCategory || "");
   const [thumbnail, setThumbnail] = useState(null);
+
+  const [previewVisible, setPreviewVisible] = useState(false);
+
   return (
     <div className="flex justify-center px-4 py-36 dark:bg-slate-900">
       <div className="w-full max-w-4xl p-8 bg-white shadow-xl dark:bg-gray-800 rounded-2xl">
@@ -70,15 +76,68 @@ function EditBlog() {
             className="block w-full text-sm text-gray-600 dark:text-gray-300"
           />
 
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full py-3 font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700"
-          >
-            ✅ Save & Publish
-          </button>
+          {/* Buttons */}
+          <div className="flex justify-between gap-4">
+            <Button
+              type="button"
+              label="👀 Preview"
+              className="flex items-center justify-center w-full gap-2 py-3 font-semibold text-purple-600 transition duration-300 border-2 border-purple-300 rounded-lg hover:bg-purple-50 sm:w-1/2"
+              onClick={() => setPreviewVisible(true)}
+            />
+            <button
+              type="submit"
+              className="w-1/2 py-3 font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700"
+            >
+              ✅ Save & Publish
+            </button>
+          </div>
         </form>
       </div>
+
+      {/* Preview Dialog */}
+      <Dialog
+        header="📖 Blog Preview"
+        visible={previewVisible}
+        style={{ width: "70vw" }}
+        modal
+        onHide={() => setPreviewVisible(false)}
+      >
+        <div className="space-y-4">
+          {/* Title */}
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+            {title || "Untitled Blog"}
+          </h2>
+
+          {/* Subtitle */}
+          {subtitle && (
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              {subtitle}
+            </p>
+          )}
+
+          {/* Category */}
+          {category && (
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              📂 {category}
+            </p>
+          )}
+
+          {/* Thumbnail Preview */}
+          {thumbnail && (
+            <img
+              src={URL.createObjectURL(thumbnail)}
+              alt="Thumbnail Preview"
+              className="object-cover w-full rounded-lg max-h-64"
+            />
+          )}
+
+          {/* Content */}
+          <div
+            className="prose dark:prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
+        </div>
+      </Dialog>
     </div>
   );
 }

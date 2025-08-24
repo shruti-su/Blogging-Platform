@@ -11,6 +11,7 @@ import { SignIn, SignUp, Forgotpassword } from "/src/pages/auth";
 import UploadBlog from "/src/pages/dashboard/upload-blog";
 import EditBlog from "/src/pages/dashboard/edit-blog";
 import ChooseBlogType from "/src/pages/dashboard/choose-blogtype";
+import CategoryList from "/src/pages/dashboard/category/category-list";
 import Unauthorised from "/src/pages/unauthorised/unauthorised";
 import AdminHome from "./pages/admin/AdminHome"; // Adjust the path as needed
 import UserManagement from "./pages/admin/user-management"; // Adjust the path as needed
@@ -68,6 +69,33 @@ export const routes = [
         name: "Edit Blog",
         path: "/edit-blog",
         element: <EditBlog />,
+        sidebar: true,
+      },
+      {
+        icon: (
+          <>
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g fill="none">
+                <circle cx="5" cy="6" fill="currentColor" r="1.5" />
+                <circle cx="5" cy="10" fill="currentColor" r="1.5" />
+                <circle cx="5" cy="14" fill="currentColor" r="1.5" />
+                <path
+                  d="M8.5 6h7m-7 4h7m-7 4h7"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="2"
+                />
+              </g>
+            </svg>
+          </>
+        ),
+        name: "Category List",
+        path: "/category-list",
+        element: <CategoryList />,
         sidebar: true,
       },
 

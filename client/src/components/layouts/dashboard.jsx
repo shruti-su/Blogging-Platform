@@ -4,43 +4,27 @@ import { IconButton } from "@material-tailwind/react";
 import {
   Sidenav,
   DashboardNavbar,
-  Configurator,
   Footer,
 } from "/src/components/layouts/layout";
-import {
-  useMaterialTailwindController,
-  setOpenConfigurator,
-} from "/src/components/context";
+
 import routes from "/src/router.jsx";
 
 export function Dashboard() {
-  const [controller, dispatch] = useMaterialTailwindController();
-  const { sidenavType } = controller;
-
   // Debugging: Check the routes array structure and content
   // console.log("Dashboard: `routes` prop:", routes);
 
   return (
-    <div className="bg-secondary dark:bg-secondary-dark min-h-screen ">
+    <div className="min-h-screen bg-secondary dark:bg-secondary-dark ">
       {/* Sidenav component should receive the full routes or filtered ones for navigation */}
-      <Sidenav
-        routes={routes.filter((r) => r.layout === "dashboard")} // Pass only dashboard routes to Sidenav
-      />
-      <div className="grid p-4 xl:ml-56 ">
-        <div >
+
+      <div className="grid p-4 ">
+        <div className="p-4 mb-4 shadow-lg bg-white/80 dark:bg-gray-800/80 rounded-xl shadow-blue-gray-500/5">
           <DashboardNavbar />
-          {/* <Configurator /> */}
-          {/* <IconButton
-            size="lg"
-            color="white"
-            className="fixed z-40 rounded-full bottom-8 right-8 shadow-blue-gray-900/10"
-            ripple={false}
-            onClick={() => setOpenConfigurator(dispatch, true)}
-          >
-            <Cog6ToothIcon className="w-5 h-5" />
-          </IconButton> */}
+          <Sidenav
+            routes={routes.filter((r) => r.layout === "dashboard")} // Pass only dashboard routes to Sidenav
+          />
         </div>
-        <div  >
+        <div>
           <Routes>
             {routes.map(({ layout, pages }) => {
               if (layout === "dashboard") {

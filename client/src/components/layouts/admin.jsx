@@ -5,56 +5,26 @@ import { IconButton } from "@material-tailwind/react";
 import {
   Sidenav,
   DashboardNavbar,
-  Configurator,
   Footer,
 } from "/src/components/layouts/layout";
-
-import {
-  useMaterialTailwindController,
-  setOpenConfigurator,
-} from "/src/components/context";
 
 import routes from "/src/router.jsx";
 
 export function AdminPanel() {
-  const [controller, dispatch] = useMaterialTailwindController();
-  const { sidenavType } = controller;
-
   // Filter out only admin routes
   const adminRoutes = routes.find((r) => r.layout === "admin")?.pages || [];
 
   return (
-    <div className="bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-3xl min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 rounded-3xl">
       {/* Sidebar for admin routes */}
-      <Sidenav
-        routes={[{ layout: "admin", pages: adminRoutes }]}
-        brandImg={
-          sidenavType === "dark"
-            ? "/img/logo-ct.png"
-            : "/img/logo-ct-dark.png"
-        }
-      />
+      <Sidenav routes={[{ layout: "admin", pages: adminRoutes }]} />
 
       {/* Main content layout */}
-      <div className="p-4 xl:ml-80 min-h-screen grid grid-rows-12">
+      <div className="grid min-h-screen p-4 xl:ml-80 grid-rows-12">
         {/* Top navbar and floating config button */}
-        <div className="row-span-1">
-          <DashboardNavbar />
-          <Configurator />
-
-          <IconButton
-            size="lg"
-            color="white"
-            className="fixed z-40 rounded-full bottom-8 right-8 shadow-blue-gray-900/10"
-            ripple={false}
-            onClick={() => setOpenConfigurator(dispatch, true)}
-          >
-            <Cog6ToothIcon className="w-5 h-5" />
-          </IconButton>
-        </div>
 
         {/* Main route content */}
-        <div className="row-span-10 overflow-auto">
+        <div className="overflow-auto row-span-10">
           <Routes>
             {adminRoutes.map(({ path, element }, index) => (
               <Route key={index} path={path} element={element} />
@@ -66,7 +36,7 @@ export function AdminPanel() {
         </div>
 
         {/* Footer */}
-        <div className="text-blue-gray-600 row-span-1">
+        <div className="row-span-1 text-blue-gray-600">
           <Footer />
         </div>
       </div>

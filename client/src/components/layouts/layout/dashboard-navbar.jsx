@@ -25,8 +25,7 @@ import {
   setOpenConfigurator,
   setOpenSidenav,
 } from "@/components/context";
-import { useAuth } from "@/components/auth/AuthContext"; // Adjust the import path as necessary
-import { useTheme } from "@/components/context/ThemeContext"; // Corrected import: only useTheme
+import { useAuth } from "@/components/auth/AuthContext";
 
 // Import ThemeToggle component
 import ThemeToggle from "@/components/ThemeToggle"; // Adjust path if necessary
@@ -37,7 +36,6 @@ export function DashboardNavbar() {
   const { pathname } = useLocation();
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
   const { logout } = useAuth(); // Destructure the logout function from useAuth
-  const { theme } = useTheme(); // Consume the theme from context (still available for other uses if needed)
 
   return (
     <Navbar
@@ -66,21 +64,16 @@ export function DashboardNavbar() {
                 {layout}
               </Typography>
             </Link>
-            <Typography
-              variant="small"
-              color="blue-gray"
-              className="font-normal text-primarytext dark:text-primarytext-dark"
-            >
-              {page}
-            </Typography>
+            {page && (
+              <Typography
+                variant="small"
+                color="blue-gray"
+                className="font-normal text-primarytext dark:text-primarytext-dark"
+              >
+                {page}
+              </Typography>
+            )}
           </Breadcrumbs>
-          <Typography
-            variant="h6"
-            color="blue-gray"
-            className="text-primarytext dark:text-primarytext-dark"
-          >
-            {page}
-          </Typography>
         </div>
         <div className="flex items-center">
           <div className="mr-auto md:mr-4 md:w-56">
@@ -111,6 +104,7 @@ export function DashboardNavbar() {
             variant="text"
             color="blue-gray"
             className="grid xl:hidden"
+            onClick={logout}
           >
             <UserCircleIcon className="w-5 h-5 text-blue-gray-500" />
           </IconButton>

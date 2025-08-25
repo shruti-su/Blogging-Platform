@@ -79,7 +79,7 @@ export function SignUp() {
         name: user.displayName,
       });
       login(response.token);
-      navigate("/dashboard/");
+      navigate("/dashboard/Explore");
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -126,7 +126,7 @@ export function SignUp() {
     try {
       const res = await AuthService.verifyOtp({ email, otp });
       login(res.token);
-      navigate("/dashboard/");
+      navigate("/dashboard/Explore");
     } catch (err) {
       setError("OTP verification failed. Please try again.");
     }

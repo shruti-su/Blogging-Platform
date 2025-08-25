@@ -21,9 +21,14 @@ function App() {
       <AuthProvider>
         <Routes>
           {/* <AuthProvider> */}
-          <Route path="*" element={<PageNotFound/>} />
+          <Route path="*" element={<PageNotFound />} />
           <Route path="/" element={<LandingPage />} />
           <Route element={<ProtectedRoute allowedRoles={["user"]} />}>
+            <Route
+              path="/dashboard/"
+              element={<Navigate to="/dashboard/Explore" replace />}
+            />
+
             <Route path="/dashboard/*" element={<Dashboard />} />
           </Route>
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>

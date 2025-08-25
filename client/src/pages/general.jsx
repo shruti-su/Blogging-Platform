@@ -19,7 +19,7 @@ function General() {
     if (userRole() === "admin") {
       navigate("/admin/");
     } else if (userRole() === "user") {
-      navigate("/dashboard/");
+      navigate("/dashboard/Explore");
     } else {
       navigate("/auth/sign-in");
     }

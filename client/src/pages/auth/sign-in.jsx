@@ -69,7 +69,7 @@ export function SignIn() {
         if (role === "admin") {
           navigate("/admin/");
         } else {
-          navigate("/dashboard/");
+          navigate("/dashboard/Explore");
         }
       } else {
         // If simulated credentials don't match, set an error
@@ -100,7 +100,7 @@ export function SignIn() {
         if (role === "admin") {
           navigate("/admin/");
         } else {
-          navigate("/dashboard/");
+          navigate("/dashboard/Explore");
         }
       });
     } catch (error) {

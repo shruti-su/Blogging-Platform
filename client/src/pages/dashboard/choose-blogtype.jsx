@@ -24,7 +24,7 @@ export default function ChooseBlogType() {
       console.log("Selected Blog Type:", finalType);
       // Send to backend if needed
     }
-    navigate("/dashboard/");
+    navigate("/dashboard/Explore");
   };
 
   return (
@@ -72,7 +72,7 @@ export default function ChooseBlogType() {
           <Button
             color="gray"
             variant="outlined"
-            onClick={() => navigate("/dashboard/")}
+            onClick={() => navigate("/dashboard/Explore")}
           >
             Skip
           </Button>

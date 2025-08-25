@@ -118,9 +118,9 @@ export function Forgotpassword() {
         >
             <motion.div
                 variants={itemVariants}
-                className="w-full max-w-xl lg:max-w-2xl rounded-2xl overflow-hidden shadow-2xl shadow-blue-200 bg-white p-6 md:p-10"
+                className="w-full max-w-xl p-6 overflow-hidden bg-white shadow-2xl lg:max-w-2xl rounded-2xl shadow-blue-200 md:p-10"
             >
-                <div className="text-center mb-8">
+                <div className="mb-8 text-center">
                     <motion.div variants={itemVariants}>
                         <Typography variant="h2" className="mb-2 font-extrabold text-gray-800">
                             Forgot Password
@@ -165,7 +165,6 @@ export function Forgotpassword() {
                             <motion.div variants={itemVariants}>
                                 <Button
                                     type="submit"
-                                    fullWidth
                                     className="bg-indigo-600"
                                     disabled={loading}
                                 >
@@ -232,10 +231,10 @@ export function Forgotpassword() {
                             )}
 
                             {/* Buttons */}
-                            <div className="flex py-4 gap-2">
+                            <div className="flex gap-2 py-4">
                                 <Button
                                     onClick={() => stepperRef.current.prevCallback()}
-                                    className="bg-gray-300 text-gray-800 hover:bg-gray-400 transition-all duration-150"
+                                    className="text-gray-800 transition-all duration-150 bg-gray-300 hover:bg-gray-400"
                                     type="button"
                                 >
                                     Back
@@ -244,7 +243,7 @@ export function Forgotpassword() {
                                 {/* ✅ Submit button for password reset */}
                                 <Button
                                     type="submit"
-                                    className="bg-indigo-600 text-white hover:bg-indigo-700 transition-all duration-150"
+                                    className="text-white transition-all duration-150 bg-indigo-600 hover:bg-indigo-700"
                                     disabled={loading}
                                 >
                                     {loading ? "Resetting..." : "Reset Password"}

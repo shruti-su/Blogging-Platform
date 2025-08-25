@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
@@ -17,6 +18,7 @@ import {
 function CategoryList() {
   const [categories, setCategories] = useState([]);
   const [openMenu, setOpenMenu] = useState(null);
+  const [menuPosition, setMenuPosition] = useState(null);
   const [visible, setVisible] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [editId, setEditId] = useState(null);
@@ -26,8 +28,8 @@ function CategoryList() {
     const fetchCategories = async () => {
       try {
         const data = await CategoryService.getAllCategories();
-        console.log("Loaded categories:", data);
-        setCategories(data); // assuming API returns [{id, name}, ...]
+        // The API returns an object { categories: [...] }, so we need to access the array.
+        setCategories(data.categories || []);
       } catch (error) {
         console.error("Failed to load categories", error);
       }
@@ -35,6 +37,19 @@ function CategoryList() {
 
     fetchCategories();
   }, []);
+
+  const handleMenuToggle = (event, categoryId) => {
+    if (openMenu === categoryId) {
+      setOpenMenu(null);
+    } else {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setMenuPosition({
+        top: rect.bottom + 4, // Position below the button
+        left: rect.right - 144, // Align right edge (w-36 = 144px)
+      });
+      setOpenMenu(categoryId);
+    }
+  };
 
   // ✅ Open Add Dialog
   const handleOpenAdd = () => {
@@ -45,9 +60,9 @@ function CategoryList() {
 
   // ✅ Open Edit Dialog
   const handleEdit = (id) => {
-    const category = categories.find((c) => c.id === id);
+    const category = categories.find((c) => c._id === id);
     if (category) {
-      setEditId(id);
+      setEditId(id); // The ID from the category object which is `_id`
       setNewCategory(category.name);
       setVisible(true);
     }
@@ -62,7 +77,7 @@ function CategoryList() {
         // Local update (since update API not in service yet)
         setCategories(
           categories.map((cat) =>
-            cat.id === editId ? { ...cat, name: newCategory.trim() } : cat
+            cat._id === editId ? { ...cat, name: newCategory.trim() } : cat
           )
         );
       } else {
@@ -70,8 +85,9 @@ function CategoryList() {
         const newCat = { name: newCategory.trim() };
         const savedCategory = await CategoryService.addCategory(newCat);
 
-        // Push new category into state
-        setCategories([...categories, savedCategory]);
+        // The API returns { message: '...', category: {...} }
+        // We only need to add the category object to our state.
+        setCategories([...categories, savedCategory.category]);
       }
     } catch (error) {
       console.error("Error saving category:", error);
@@ -87,7 +103,7 @@ function CategoryList() {
     try {
       // If you add delete API later:
       // await CategoryService.deleteCategory(id);
-      setCategories(categories.filter((cat) => cat.id !== id));
+      setCategories(categories.filter((cat) => cat._id !== id));
     } catch (error) {
       console.error("Error deleting category:", error);
     }
@@ -121,10 +137,10 @@ function CategoryList() {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="overflow-visible divide-y divide-gray-200 dark:divide-gray-700">
             {categories.map((cat, i) => (
               <tr
-                key={cat.id}
+                key={cat._id}
                 className={`${
                   i % 2 === 0
                     ? "bg-gray-50 dark:bg-gray-700/50"
@@ -137,37 +153,11 @@ function CategoryList() {
                 <td className="relative px-6 py-4 text-right">
                   {/* Three dot button */}
                   <button
-                    onClick={() =>
-                      setOpenMenu(openMenu === cat.id ? null : cat.id)
-                    }
+                    onClick={(e) => handleMenuToggle(e, cat._id)}
                     className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
                   >
                     <EllipsisVerticalIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                   </button>
-
-                  {/* Dropdown Menu */}
-                  {openMenu === cat.id && (
-                    <div className="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg -left-40 top-5 w-36 dark:bg-gray-800 dark:border-gray-700">
-                      <button
-                        onClick={() => {
-                          handleEdit(cat.id);
-                          setOpenMenu(null);
-                        }}
-                        className="flex items-center w-full gap-2 px-4 py-2 text-sm text-blue-600 hover:bg-gray-100 dark:text-blue-400 dark:hover:bg-gray-700"
-                      >
-                        <PencilIcon className="w-4 h-4" /> Edit
-                      </button>
-                      <button
-                        onClick={() => {
-                          handleDelete(cat.id);
-                          setOpenMenu(null);
-                        }}
-                        className="flex items-center w-full gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"
-                      >
-                        <TrashIcon className="w-4 h-4" /> Delete
-                      </button>
-                    </div>
-                  )}
                 </td>
               </tr>
             ))}
@@ -186,6 +176,38 @@ function CategoryList() {
         </table>
       </div>
 
+      {/* Dropdown Menu Portal */}
+      {openMenu &&
+        menuPosition &&
+        createPortal(
+          <div
+            className="fixed z-50 bg-white border border-gray-200 rounded-lg shadow-lg w-36 dark:bg-gray-800 dark:border-gray-700"
+            style={{
+              top: `${menuPosition.top}px`,
+              left: `${menuPosition.left}px`,
+            }}
+          >
+            <button
+              onClick={() => {
+                handleEdit(openMenu);
+                setOpenMenu(null);
+              }}
+              className="flex items-center w-full gap-2 px-4 py-2 text-sm text-blue-600 hover:bg-gray-100 dark:text-blue-400 dark:hover:bg-gray-700"
+            >
+              <PencilIcon className="w-4 h-4" /> Edit
+            </button>
+            <button
+              onClick={() => {
+                handleDelete(openMenu);
+                setOpenMenu(null);
+              }}
+              className="flex items-center w-full gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"
+            >
+              <TrashIcon className="w-4 h-4" /> Delete
+            </button>
+          </div>,
+          document.body
+        )}
       {/* Add/Edit Category Dialog */}
       <Dialog
         header={

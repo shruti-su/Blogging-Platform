@@ -20,7 +20,6 @@ export function Sidenav({ routes }) {
                           ? " text-gray-900 dark:text-gray-200 border-b-4 border-blue-500"
                           : "text-gray-900 dark:text-gray-200"
                       }`}
-                      fullWidth
                     >
                       {icon}
                       <Typography

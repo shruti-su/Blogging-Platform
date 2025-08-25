@@ -265,7 +265,6 @@ export function SignUp() {
               <motion.div whileHover={{ scale: 1.02 }}>
                 <Button
                   className="text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600"
-                  fullWidth
                   type="submit"
                 >
                   Send OTP
@@ -286,7 +285,6 @@ export function SignUp() {
                   size="lg"
                   color="white"
                   className="flex items-center justify-center gap-3 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
-                  fullWidth
                   onClick={loginWithGoogle}
                 >
                   <img
@@ -342,14 +340,13 @@ export function SignUp() {
               <motion.div whileHover={{ scale: 1.02 }}>
                 <Button
                   className="text-white bg-green-600 hover:bg-green-700"
-                  fullWidth
                   type="submit"
                 >
                   Verify & Register
                 </Button>
               </motion.div>
 
-              <Button variant="outlined" fullWidth onClick={() => setStep(1)}>
+              <Button variant="outlined" onClick={() => setStep(1)}>
                 Back
               </Button>
             </form>

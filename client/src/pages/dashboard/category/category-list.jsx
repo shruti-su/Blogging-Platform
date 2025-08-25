@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
+
+// API service
+import CategoryService from "@/services/api/category";
 
 // Heroicons
 import {
@@ -12,41 +15,93 @@ import {
 } from "@heroicons/react/24/outline";
 
 function CategoryList() {
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Technology" },
-    { id: 2, name: "Travel" },
-  ]);
-
+  const [categories, setCategories] = useState([]);
   const [openMenu, setOpenMenu] = useState(null);
   const [visible, setVisible] = useState(false);
   const [newCategory, setNewCategory] = useState("");
+  const [editId, setEditId] = useState(null);
 
-  // Add new category
-  const handleAdd = () => {
-    if (newCategory.trim() !== "") {
-      setCategories([
-        ...categories,
-        { id: Date.now(), name: newCategory.trim() },
-      ]);
-      setNewCategory(""); // clear input
-      setVisible(false); // close dialog
+  // ✅ Load categories from API on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await CategoryService.getAllCategories();
+        console.log("Loaded categories:", data);
+        setCategories(data); // assuming API returns [{id, name}, ...]
+      } catch (error) {
+        console.error("Failed to load categories", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // ✅ Open Add Dialog
+  const handleOpenAdd = () => {
+    setEditId(null);
+    setNewCategory("");
+    setVisible(true);
+  };
+
+  // ✅ Open Edit Dialog
+  const handleEdit = (id) => {
+    const category = categories.find((c) => c.id === id);
+    if (category) {
+      setEditId(id);
+      setNewCategory(category.name);
+      setVisible(true);
     }
   };
 
-  // Delete category
-  const handleDelete = (id) => {
-    setCategories(categories.filter((cat) => cat.id !== id));
+  // ✅ Save category (Add via API, Edit locally)
+  const handleSave = async () => {
+    if (newCategory.trim() === "") return;
+
+    try {
+      if (editId) {
+        // Local update (since update API not in service yet)
+        setCategories(
+          categories.map((cat) =>
+            cat.id === editId ? { ...cat, name: newCategory.trim() } : cat
+          )
+        );
+      } else {
+        // Add new category via API
+        const newCat = { name: newCategory.trim() };
+        const savedCategory = await CategoryService.addCategory(newCat);
+
+        // Push new category into state
+        setCategories([...categories, savedCategory]);
+      }
+    } catch (error) {
+      console.error("Error saving category:", error);
+    }
+
+    setNewCategory("");
+    setEditId(null);
+    setVisible(false);
+  };
+
+  // ✅ Delete category (local until delete API is ready)
+  const handleDelete = async (id) => {
+    try {
+      // If you add delete API later:
+      // await CategoryService.deleteCategory(id);
+      setCategories(categories.filter((cat) => cat.id !== id));
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
   };
 
   return (
-    <div className="w-full px-4 py-4 bg-white shadow-md dark:bg-gray-800 rounded-xl">
+    <div className="w-full p-6 bg-white shadow-md dark:bg-gray-800 rounded-xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
           📂 Category List
         </h2>
         <button
-          onClick={() => setVisible(true)}
+          onClick={handleOpenAdd}
           className="flex items-center gap-2 px-4 py-2 font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700"
         >
           <PlusIcon className="w-5 h-5" /> Add
@@ -54,23 +109,27 @@ function CategoryList() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="relative overflow-visible overflow-x-auto">
         <table className="w-full overflow-hidden border border-gray-200 rounded-lg dark:border-gray-700">
-          <thead className="bg-gray-100 dark:bg-gray-700">
+          <thead className="bg-purple-500">
             <tr>
-              <th className="px-6 py-3 text-sm font-semibold text-left text-gray-700 dark:text-gray-200">
+              <th className="px-6 py-3 text-base font-bold tracking-wider text-left text-white uppercase">
                 Category Name
               </th>
-              <th className="px-6 py-3 text-sm font-semibold text-right text-gray-700 dark:text-gray-200">
+              <th className="px-6 py-3 text-base font-bold tracking-wider text-right text-white uppercase">
                 Action
               </th>
             </tr>
           </thead>
           <tbody>
-            {categories.map((cat) => (
+            {categories.map((cat, i) => (
               <tr
                 key={cat.id}
-                className="border-t border-gray-200 dark:border-gray-700"
+                className={`${
+                  i % 2 === 0
+                    ? "bg-gray-50 dark:bg-gray-700/50"
+                    : "bg-white dark:bg-gray-800"
+                } hover:bg-gray-100 dark:hover:bg-gray-600 border-t border-gray-200 dark:border-gray-700`}
               >
                 <td className="px-6 py-4 text-gray-800 dark:text-gray-100">
                   {cat.name}
@@ -88,7 +147,7 @@ function CategoryList() {
 
                   {/* Dropdown Menu */}
                   {openMenu === cat.id && (
-                    <div className="absolute z-20 bg-white border border-gray-200 rounded-lg shadow-lg right-10 top-10 w-36 dark:bg-gray-800 dark:border-gray-700">
+                    <div className="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg -left-40 top-5 w-36 dark:bg-gray-800 dark:border-gray-700">
                       <button
                         onClick={() => {
                           handleEdit(cat.id);
@@ -127,26 +186,37 @@ function CategoryList() {
         </table>
       </div>
 
-      {/* Add Category Dialog */}
+      {/* Add/Edit Category Dialog */}
       <Dialog
-        header="➕ Add New Category"
+        header={
+          <div className="flex items-center gap-2 text-lg font-bold text-gray-800 dark:text-gray-100">
+            {editId ? "✏️ Edit Category" : "➕ Add New Category"}
+          </div>
+        }
         visible={visible}
-        style={{ width: "25rem" }}
+        style={{ width: "28rem" }}
         modal
         onHide={() => setVisible(false)}
         footer={
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-3">
             <Button
               label="Cancel"
-              severity="secondary"
+              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               onClick={() => setVisible(false)}
             />
-            <Button label="Add" severity="success" onClick={handleAdd} />
+            <Button
+              label={editId ? "Update" : "Add"}
+              className="px-4 py-2 text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700"
+              onClick={handleSave}
+            />
           </div>
         }
       >
         <div className="flex flex-col gap-4">
-          <label htmlFor="categoryName" className="font-medium">
+          <label
+            htmlFor="categoryName"
+            className="font-medium text-gray-700 dark:text-gray-200"
+          >
             Category Name
           </label>
           <InputText
@@ -154,7 +224,7 @@ function CategoryList() {
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
             placeholder="Enter category name..."
-            className="w-full"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:outline-none"
           />
         </div>
       </Dialog>

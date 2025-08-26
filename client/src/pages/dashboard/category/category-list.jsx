@@ -208,17 +208,33 @@ function CategoryList() {
           </div>,
           document.body
         )}
-      {/* Add/Edit Category Dialog */}
+
+      {/* Add/Edit Dialog */}
       <Dialog
         header={
           <div className="flex items-center gap-2 text-lg font-bold text-gray-800 dark:text-gray-100">
-            {editId ? "✏️ Edit Category" : "➕ Add New Category"}
+            <svg
+              className="w-6 h-6"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
+                fill="currentColor"
+              />
+            </svg>
+            {editId ? "Edit Category" : "Add New Category"}
           </div>
         }
         visible={visible}
         style={{ width: "28rem" }}
         modal
-        onHide={() => setVisible(false)}
+        onHide={() => {
+          setVisible(false);
+          setEditId(null);
+          setNewCategory("");
+        }}
+        className="bg-white rounded-lg shadow-lg dark:bg-gray-900"
         footer={
           <div className="flex justify-end gap-3">
             <Button
@@ -246,7 +262,7 @@ function CategoryList() {
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
             placeholder="Enter category name..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600 "
           />
         </div>
       </Dialog>

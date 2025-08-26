@@ -1,13 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import CategoryService from "@/services/api/category";
+
 function UploadBlog() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await CategoryService.getAllCategories();
+        if (data && data.categories) {
+          setCategories(data.categories);
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // pass title & category to editor (state or params)
-    navigate("/edit-blog", { state: { title, category } });
+    navigate("/dashboard/edit-blog", { state: { title, category } });
   };
   return (
     <div className="flex justify-center px-4 py-36 dark:bg-slate-900">
@@ -23,7 +42,7 @@ function UploadBlog() {
         </div>
 
         {/* Form */}
-        <form className="space-y-5 sm:space-y-6 onSubmit={handleSubmit}">
+        <form className="space-y-5 sm:space-y-6" onSubmit={handleSubmit}>
           {/* Title */}
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200 sm:text-base">
@@ -49,14 +68,11 @@ function UploadBlog() {
               className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-700 sm:px-4 sm:py-3 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:text-base"
             >
               <option value="">Select a category</option>
-              <option value="tech">💻 Technology</option>
-              <option value="travel">✈️ Travel</option>
-              <option value="food">🍔 Food</option>
-              <option value="life">🌱 Lifestyle</option>
-              <option value="edu">🎓 Education</option>
-              <option value="business">💼 Business</option>
-              <option value="health">❤️ Health</option>
-              <option value="custom">✏️ Other (enter below)</option>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat.name}>
+                  {cat.name}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -65,7 +81,7 @@ function UploadBlog() {
             type="submit"
             className="w-full py-2 text-sm font-semibold text-white transition duration-300 bg-purple-600 rounded-lg shadow-md sm:py-3 hover:bg-purple-700 hover:shadow-lg sm:text-base"
           >
-            🚀 Publish Blog
+            ✍️ Start Writing
           </button>
         </form>
       </div>

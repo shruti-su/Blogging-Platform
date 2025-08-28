@@ -17,7 +17,7 @@ import AdminHome from "./pages/admin/AdminHome"; // Adjust the path as needed
 import UserManagement from "./pages/admin/user-management"; // Adjust the path as needed
 
 const icon = {
-  className: "w-5 h-5 text-inherit",
+  className: "w-6 h-6 text-inherit",
 };
 
 export const routes = [
@@ -35,7 +35,7 @@ export const routes = [
         icon: (
           <>
             <svg
-              className="w-5 h-5 "
+              className="w-6 h-6 "
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -55,7 +55,7 @@ export const routes = [
         icon: (
           <>
             <svg
-              className="w-5 h-5"
+              className="w-6 h-6"
               viewBox="0 0 576 512"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -75,7 +75,7 @@ export const routes = [
         icon: (
           <>
             <svg
-              className="w-5 h-5"
+              className="w-6 h-6"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
             >

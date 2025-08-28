@@ -4,9 +4,12 @@ import { Typography } from "@material-tailwind/react";
 
 export function Sidenav({ routes }) {
   return (
-    <div>
+    <div className="">
       {routes.map(({ layout, pages }) => (
-        <div key={layout} className="flex flex-row gap-1 ">
+        <div
+          key={layout}
+          className="flex flex-row gap-1 justify-between md:justify-start"
+        >
           {/* Filter pages to only show those with sidebar: true */}
           {pages
             .filter((page) => page.sidebar === true)
@@ -15,16 +18,20 @@ export function Sidenav({ routes }) {
                 <NavLink to={`/${layout}${path}`}>
                   {({ isActive }) => (
                     <button
-                      className={`flex items-center gap-4 px-4 capitalize ${
+                      className={`flex items-center md:gap-2 md:mx-2  px-1 capitalize ${
                         isActive
-                          ? " text-gray-900 dark:text-gray-200 border-b-4 border-blue-500"
-                          : "text-gray-900 dark:text-gray-200"
+                          ? `text-gray-900 dark:text-gray-200
+                            bg-blue-400 px-2 py-1
+                            rounded-lg  md:border-b-4 md:border-blue-500
+                            md:rounded-none  md:py-0 
+                            md:bg-transparent `
+                          : "text-gray-900 dark:text-gray-200  px-2 py-1 md:py-0   "
                       }`}
                     >
                       {icon}
                       <Typography
                         color="inherit"
-                        className="font-medium capitalize"
+                        className="font-medium capitalize hidden md:inline-block"
                       >
                         {name}
                       </Typography>

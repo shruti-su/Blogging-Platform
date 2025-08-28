@@ -10,18 +10,12 @@ import {
 import routes from "/src/router.jsx";
 
 export function Dashboard() {
-  // Debugging: Check the routes array structure and content
-  // console.log("Dashboard: `routes` prop:", routes);
-
   return (
-    <div className="min-h-screen bg-secondary dark:bg-secondary-dark ">
-      {/* Sidenav component should receive the full routes or filtered ones for navigation */}
-
+    <div className="min-h-svh w-full bg-secondary dark:bg-secondary-dark ">
       <div className="grid p-4 ">
         <div className="p-4 mb-4 shadow-lg bg-white/80 dark:bg-gray-800/80 rounded-xl shadow-blue-gray-500/5">
-          <DashboardNavbar />
-          <Sidenav
-            routes={routes.filter((r) => r.layout === "dashboard")} // Pass only dashboard routes to Sidenav
+          <DashboardNavbar
+            routegiven={routes.filter((r) => r.layout === "dashboard")}
           />
         </div>
         <div>
@@ -32,10 +26,8 @@ export function Dashboard() {
                   <Route key={key} path={path} element={element} />
                 ));
               }
-              return null; // Don't render anything for non-dashboard layouts
+              return null;
             })}
-            {/* <Route path="/" element={<Navigate to="/Explore" replace />} /> */}
-            {/* <Route path="*" element={<p>Dashboard Page Not Found (404)</p>} /> */}
           </Routes>
         </div>
 

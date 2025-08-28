@@ -34,7 +34,7 @@ import { useAuth } from "@/components/auth/AuthContext";
 
 // Import ThemeToggle component
 import ThemeToggle from "@/components/ThemeToggle"; // Adjust path if necessary
-
+import { Image } from "primereact/image";
 export function DashboardNavbar({ routegiven }) {
   const [controller, dispatch] = useMaterialTailwindController();
   const { fixedNavbar, openSidenav } = controller;
@@ -48,23 +48,45 @@ export function DashboardNavbar({ routegiven }) {
   return (
     <div className=" w-full ">
       <div className="hidden md:block">
-        <div className="items-end w-full capitalize">
-          <div className="w-full flex justify-between">
-            <Sidenav routes={routegiven} />
+        <div className="w-full capitalize ">
+          <div className="w-full items-center flex justify-between mb-4">
+            <div className="flex flex-row items-center">
+              <div className="h-10 mx-3">
+                <img
+                  src="/img/content-creation.png"
+                  alt=""
+                  className="h-full aspect-square"
+                />
+              </div>
+              <Breadcrumbs
+                className={`bg-transparent p-0 transition-all text-lg ${
+                  fixedNavbar ? "mt-1" : ""
+                }`}
+              >
+                <Link to={`/${layout}`}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal transition-all opacity-50 hover:text-blue-500 hover:opacity-100 text-primarytext dark:text-primarytext-dark"
+                  >
+                    {layout}
+                  </Typography>
+                </Link>
+                {page && (
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal text-primarytext dark:text-primarytext-dark"
+                  >
+                    {page}
+                  </Typography>
+                )}
+              </Breadcrumbs>
+            </div>
             <div className="flex items-center">
               <div className="mr-auto md:mr-4 md:w-56">
                 <Input label="Search" />
               </div>
-
-              <Button
-                variant="text"
-                color="blue-gray"
-                className="items-center gap-1 px-4 normal-case xl:flex"
-                onClick={logout}
-              >
-                <UserCircleIcon className="w-5 h-5 text-blue-gray-500" />
-                Log out
-              </Button>
 
               {/* Theme Toggle Button - Integrated cleanly into the navbar */}
               <ThemeToggle />
@@ -77,32 +99,18 @@ export function DashboardNavbar({ routegiven }) {
                   </MenuHandler>
                 </Menu>
               </div>
+              <Button
+                variant="text"
+                color="blue-gray"
+                className="items-center gap-1 px-4 normal-case xl:flex"
+                onClick={logout}
+              >
+                <UserCircleIcon className="w-5 h-5 text-blue-gray-500" />
+                Log out
+              </Button>
             </div>
           </div>
-          <Breadcrumbs
-            className={`bg-transparent p-0 transition-all ${
-              fixedNavbar ? "mt-1" : ""
-            }`}
-          >
-            <Link to={`/${layout}`}>
-              <Typography
-                variant="small"
-                color="blue-gray"
-                className="font-normal transition-all opacity-50 hover:text-blue-500 hover:opacity-100 text-primarytext dark:text-primarytext-dark"
-              >
-                {layout}
-              </Typography>
-            </Link>
-            {page && (
-              <Typography
-                variant="small"
-                color="blue-gray"
-                className="font-normal text-primarytext dark:text-primarytext-dark"
-              >
-                {page}
-              </Typography>
-            )}
-          </Breadcrumbs>
+          <Sidenav routes={routegiven} />
         </div>
       </div>
       <div className="block md:hidden">
@@ -145,8 +153,15 @@ export function DashboardNavbar({ routegiven }) {
         </Sidebar>
 
         <div className="flex justify-between  items-center flex-col">
-          <div className="flex justify-between w-full">
-            <div className="items-end w-full capitalize">
+          <div className="flex justify-between w-full mb-2">
+            <div className="items-center w-full capitalize flex flex-row">
+              <div className="h-8 mr-3">
+                <img
+                  src="/img/content-creation.png"
+                  alt=""
+                  className="h-full aspect-square"
+                />
+              </div>
               <Breadcrumbs
                 className={`bg-transparent p-0 transition-all ${
                   fixedNavbar ? "mt-1" : ""

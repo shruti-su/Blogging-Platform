@@ -1,8 +1,8 @@
 // src/pages/blog/BlogEditor.jsx
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import { Editor } from "primereact/editor";
+// import "react-quill/dist/quill.snow.css";
 import { sweetAlert } from "../../components/SweetAlert/SweetAlert";
 // If you already have a service, you can import it and uncomment the fetch in useEffect
 import CategoryService from "@/services/api/category";
@@ -63,46 +63,12 @@ export default function CreateBlog() {
   // Enable spell check on the Quill editor after it mounts
   useEffect(() => {
     if (quillRef.current) {
-      const editor = quillRef.current.getEditor();
+      const editor = quillRef.current.getQuill();
       // By setting spellcheck to true, we enable the browser's native spell checker
       // on the editor's content-editable area.
-      editor.root.setAttribute("spellcheck", "true");
+      // editor.root.setAttribute("spellcheck", "true");
     }
   }, []);
-
-  const quillModules = useMemo(
-    () => ({
-      toolbar: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["link", "blockquote", "code-block"],
-        [{ color: [] }, { background: [] }],
-        [{ align: [] }],
-        ["clean"],
-      ],
-    }),
-    []
-  );
-
-  const quillFormats = useMemo(
-    () => [
-      "header",
-      "bold",
-      "italic",
-      "underline",
-      "strike",
-      "list",
-      "bullet",
-      "link",
-      "blockquote",
-      "code-block",
-      "color",
-      "background",
-      "align",
-    ],
-    []
-  );
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files?.[0];
@@ -252,13 +218,10 @@ export default function CreateBlog() {
 
           {/* Editor */}
           <div className="overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700">
-            <ReactQuill
+            <Editor
               ref={quillRef}
-              theme="snow"
               value={content}
-              onChange={setContent}
-              modules={quillModules}
-              formats={quillFormats}
+              onTextChange={(e) => setContent(e.htmlValue)}
             />
           </div>
           {errors.content && (

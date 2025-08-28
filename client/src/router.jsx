@@ -9,7 +9,7 @@ import {
 import Home from "/src/pages/dashboard/home";
 import { SignIn, SignUp, Forgotpassword } from "/src/pages/auth";
 import UploadBlog from "/src/pages/dashboard/upload-blog";
-import EditBlog from "/src/pages/dashboard/edit-blog";
+import CreateBlog from "/src/pages/dashboard/edit-blog";
 import ChooseBlogType from "/src/pages/dashboard/choose-blogtype";
 import CategoryList from "/src/pages/dashboard/category/category-list";
 import Unauthorised from "/src/pages/unauthorised/unauthorised";
@@ -68,7 +68,7 @@ export const routes = [
         ),
         name: "Edit Blog",
         path: "/edit-blog",
-        element: <EditBlog />,
+        element: <CreateBlog />,
         sidebar: true,
       },
       {

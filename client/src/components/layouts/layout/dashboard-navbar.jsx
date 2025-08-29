@@ -33,7 +33,7 @@ import {
 import { useAuth } from "@/components/auth/AuthContext";
 
 // Import ThemeToggle component
-import ThemeToggle from "@/components/ThemeToggle"; // Adjust path if necessary
+import { ThemeToggle, ThemeToggleLine } from "@/components/ThemeToggle"; // Adjust path if necessary
 import { Image } from "primereact/image";
 export function DashboardNavbar({ routegiven }) {
   const [controller, dispatch] = useMaterialTailwindController();
@@ -148,7 +148,7 @@ export function DashboardNavbar({ routegiven }) {
             </Button>
 
             {/* Theme Toggle Button - Integrated cleanly into the navbar */}
-            <ThemeToggle />
+            <ThemeToggleLine />
           </div>
         </Sidebar>
 

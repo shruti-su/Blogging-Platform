@@ -43,8 +43,23 @@ exports.addblog = async (req, res) => {
 
 exports.getblog = async (req, res) => {
     try {
-        const blogs = await Blog.find({ isActive: true }).sort({ createdAt: -1 }); // Get active blogs, sorted by creation date
-        res.status(200).json({ blogs });
+        const blogsFromDB = await Blog.find({ isActive: true }).sort({ createdAt: -1 }); // Get active blogs, sorted by creation date
+
+        // Manually convert Buffer to base64 string before sending to client
+        const blogs = blogsFromDB.map(blog => {
+            const blogObject = blog.toObject();
+            if (blogObject.attachedImages && blogObject.attachedImages.length > 0) {
+                blogObject.attachedImages = blogObject.attachedImages.map(img => {
+                    if (img.data instanceof Buffer) {
+                        return { ...img, data: img.data.toString('base64') };
+                    }
+                    return img;
+                });
+            }
+            return blogObject;
+        });
+
+        res.status(200).json({ blogs: blogs });
     } catch (err) {
         console.error("❌ Error fetching blogs:", err);
         res.status(500).json({ error: "Internal server error" });

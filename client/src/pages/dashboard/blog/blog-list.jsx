@@ -11,6 +11,7 @@ export default function BlogList() {
     const fetchBlogs = async () => {
       try {
         const res = await BlogService.getAllBlogs();
+        console.log("✅ Fetched blogs:", res);
         // Ensure we always get an array
         setBlogs(Array.isArray(res.blogs) ? res.blogs : []);
       } catch (err) {
@@ -79,14 +80,13 @@ export default function BlogList() {
 
                   {/* Blog Date */}
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
-                    {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                    {new Date(blog.createdAt).toLocaleString("en-US", {
                       year: "numeric",
                       month: "short",
-                      day: "2-digit",
-                    })}{" "}
-                    {new Date(blog.createdAt).toLocaleTimeString([], {
+                      day: "numeric",
                       hour: "2-digit",
                       minute: "2-digit",
+                      hour12: true,
                     })}
                   </td>
 

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Editor } from "primereact/editor";
 // import "react-quill/dist/quill.snow.css";
-import { sweetAlert } from "../../components/SweetAlert/SweetAlert";
+import { sweetAlert } from "../../../components/SweetAlert/SweetAlert";
 // If you already have a service, you can import it and uncomment the fetch in useEffect
 import CategoryService from "@/services/api/category";
 import BlogService from "@/services/api/blog";

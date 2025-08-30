@@ -8,8 +8,9 @@ import {
 } from "@heroicons/react/24/solid";
 import Home from "/src/pages/dashboard/home";
 import { SignIn, SignUp, Forgotpassword } from "/src/pages/auth";
-import UploadBlog from "/src/pages/dashboard/upload-blog";
-import CreateBlog from "/src/pages/dashboard/edit-blog";
+import UploadBlog from "/src/pages/dashboard/blog/upload-blog";
+import CreateBlog from "/src/pages/dashboard/blog/edit-blog";
+import BlogList from "/src/pages/dashboard/blog/blog-list";
 import ChooseBlogType from "/src/pages/dashboard/choose-blogtype";
 import CategoryList from "/src/pages/dashboard/category/category-list";
 import Unauthorised from "/src/pages/unauthorised/unauthorised";
@@ -69,7 +70,7 @@ export const routes = [
         name: "Edit Blog",
         path: "/edit-blog",
         element: <CreateBlog />,
-        sidebar: true,
+        sidebar: false,
       },
       {
         icon: (
@@ -96,6 +97,34 @@ export const routes = [
         name: "Category List",
         path: "/category-list",
         element: <CategoryList />,
+        sidebar: true,
+      },
+
+      {
+        icon: (
+          <>
+            <svg
+              className="w-6 h-6"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g fill="none">
+                <circle cx="5" cy="6" fill="currentColor" r="1.5" />
+                <circle cx="5" cy="10" fill="currentColor" r="1.5" />
+                <circle cx="5" cy="14" fill="currentColor" r="1.5" />
+                <path
+                  d="M8.5 6h7m-7 4h7m-7 4h7"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="2"
+                />
+              </g>
+            </svg>
+          </>
+        ),
+        name: "Blogs",
+        path: "/blog-list",
+        element: <BlogList />,
         sidebar: true,
       },
 

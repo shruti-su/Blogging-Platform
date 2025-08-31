@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { sweetAlert } from "../../../components/SweetAlert/SweetAlert";
 import CategoryService from "@/services/api/category";
 
 function UploadBlog() {
@@ -8,6 +9,7 @@ function UploadBlog() {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
+  const { showError } = sweetAlert();
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -25,6 +27,14 @@ function UploadBlog() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!title) {
+      showError("Please enter a blog title.");
+      return;
+    }
+    if (!category) {
+      showError("Please select a category.");
+      return;
+    }
     // pass title & category to editor (state or params)
     navigate("/dashboard/edit-blog", { state: { title, category } });
   };

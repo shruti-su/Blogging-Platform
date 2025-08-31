@@ -154,7 +154,7 @@ export default function CreateBlog() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-140px)] w-full">
+    <div className="min-h-[calc(100vh-140px)] w-full mt-9 p-6">
       {/* Optional dark-mode overrides for Quill */}
       <style>{`
         .dark .ql-toolbar.ql-snow {

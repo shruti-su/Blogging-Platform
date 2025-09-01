@@ -5,6 +5,7 @@ const { check } = require("express-validator");
 
 const auth = require("../middleware/authMiddleware");
 
+
 router.post(
     "/add",
     // auth,
@@ -24,10 +25,32 @@ router.get(
     // auth,
     blog.getblog
 );
+
+// @route   GET /blogs/get/:id
+// @desc    Get a single blog by ID
+// @access  Public
+router.get(
+    "/get/:id",
+    auth,
+    blog.getBlogById
+);
+
+// @route   PUT /blogs/update/:id
+// @desc    Update an existing blog
+// @access  Private (add auth middleware)
+router.put(
+    "/update/:id",
+    auth,
+    blog.updateBlog
+);
+
+// @route   DELETE /blogs/delete/:id
+// @desc    Delete a blog
+// @access  Private (add auth middleware)
 router.delete(
     "/delete/:id",
-    // auth,
-    blog.deleteblog
+    auth,
+    blog.deleteBlog
 );
 // router.post("/google-login", authcontroller.googleLogin);
 // router.post("/forgot-password", authcontroller.forgotPassword);

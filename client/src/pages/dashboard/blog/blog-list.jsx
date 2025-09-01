@@ -1,5 +1,6 @@
 // src/pages/dashboard/blog/blog-list.jsx
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { createPortal } from "react-dom";
 import {
   EllipsisVerticalIcon,
@@ -118,9 +119,11 @@ export default function BlogList() {
                       📷
                     </div>
                   )}
-                  <span className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400">
-                    {blog.blogTitle}
-                  </span>
+                  <Link to={`/dashboard/blog-viewer/${blog._id}`}>
+                    <span className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400">
+                      {blog.blogTitle}
+                    </span>
+                  </Link>
                 </td>
 
                 {/* Category */}

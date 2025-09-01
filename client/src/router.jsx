@@ -16,6 +16,7 @@ import CategoryList from "/src/pages/dashboard/category/category-list";
 import Unauthorised from "/src/pages/unauthorised/unauthorised";
 import AdminHome from "./pages/admin/AdminHome"; // Adjust the path as needed
 import UserManagement from "./pages/admin/user-management"; // Adjust the path as needed
+import BlogView from "@/pages/dashboard/blog/blog-view";
 
 const icon = {
   className: "w-6 h-6 text-inherit",
@@ -30,6 +31,13 @@ export const routes = [
         name: "Explore",
         path: "/Explore",
         element: <Home />,
+        sidebar: true,
+      },
+      {
+        icon: <UserCircleIcon {...icon} />,
+        name: "blog-viewer",
+        path: "/blog-viewer/:id",
+        element: <BlogView />,
         sidebar: true,
       },
       {

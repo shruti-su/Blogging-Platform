@@ -8,6 +8,7 @@ COPY package*.json ./
 # Install all deps including devDependencies
 RUN npm install
 
+COPY . .
 
 EXPOSE 5500
 

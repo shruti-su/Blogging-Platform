@@ -9,7 +9,7 @@ import {
 import Home from "/src/pages/dashboard/home";
 import { SignIn, SignUp, Forgotpassword } from "/src/pages/auth";
 import UploadBlog from "/src/pages/dashboard/blog/upload-blog";
-import CreateBlog from "/src/pages/dashboard/blog/edit-blog";
+import CreateBlog from "/src/pages/dashboard/blog/create-blog";
 import BlogList from "/src/pages/dashboard/blog/blog-list";
 import ChooseBlogType from "/src/pages/dashboard/choose-blogtype";
 import CategoryList from "/src/pages/dashboard/category/category-list";

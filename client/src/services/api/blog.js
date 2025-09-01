@@ -1,56 +1,52 @@
-// src/api/userService.js
-import api from './../axiosConfig'; // Import your configured Axios instance
+// src/services/api/blog.js
+import api from './../axiosConfig';
 
-// Base path for user-related endpoints
-const USER_BASE_PATH = 'blogs/';
-
+// Base path for blog-related endpoints
+const BLOG_BASE_PATH = 'blogs/';
 
 const BlogService = {
     addBlog: async (blogData) => {
         try {
-            const response = await api.post(`${USER_BASE_PATH}add`, blogData); // Adjust        
-            return response.data; // Axios puts the actual data in .data
+            const response = await api.post(`${BLOG_BASE_PATH}add`, blogData);
+            return response.data;
         } catch (error) {
-            console.error('Error adding blog:', error);
-            throw error; // Re-throw the error to be handled by the calling component
+            console.error('API Error: Could not add blog.', error);
+            throw error;
         }
     },
     updateBlog: async (blogId, blogData) => {
         try {
-            // Assumes the update endpoint is 'blogs/update/:id'
-            const response = await api.put(`${USER_BASE_PATH}update/${blogId}`, blogData);
+            const response = await api.put(`${BLOG_BASE_PATH}update/${blogId}`, blogData);
             return response.data;
         } catch (error) {
-            console.error(`Error updating blog with ID ${blogId}:`, error);
+            console.error(`API Error: Could not update blog with ID ${blogId}.`, error);
             throw error;
         }
     },
     getAllBlogs: async () => {
         try {
-            const response = await api.get(`${USER_BASE_PATH}get`); // Adjust the endpoint as needed
-            return response.data; // Axios puts the actual data in .data
+            const response = await api.get(`${BLOG_BASE_PATH}get`);
+            return response.data;
         } catch (error) {
-            console.error('Error fetching all blogs:', error);
-            throw error; // Re-throw the error to be handled by the calling component   
+            console.error('API Error: Could not fetch all blogs.', error);
+            throw error;
         }
     },
     getBlogById: async (blogId) => {
         try {
-            // Assumes the get endpoint is 'blogs/get/:id'
-            const response = await api.get(`${USER_BASE_PATH}get/${blogId}`);
+            const response = await api.get(`${BLOG_BASE_PATH}get/${blogId}`);
             return response.data;
         } catch (error) {
-            console.error(`Error fetching blog with ID ${blogId}:`, error);
+            console.error(`API Error: Could not fetch blog with ID ${blogId}.`, error);
             throw error;
         }
     },
     deleteBlog: async (blogId) => {
         try {
-            // Assumes the delete endpoint is 'blogs/delete/:id'
-            const response = await api.delete(`${USER_BASE_PATH}delete/${blogId}`);
+            const response = await api.delete(`${BLOG_BASE_PATH}delete/${blogId}`);
             return response.data;
         } catch (error) {
-            console.error(`Error deleting blog with ID ${blogId}:`, error);
+            console.error(`API Error: Could not delete blog with ID ${blogId}.`, error);
             throw error;
         }
     }

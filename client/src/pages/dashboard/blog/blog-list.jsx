@@ -1,6 +1,6 @@
 // src/pages/dashboard/blog/blog-list.jsx
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import {
   EllipsisVerticalIcon,
@@ -16,6 +16,7 @@ export default function BlogList() {
   const [openMenu, setOpenMenu] = useState(null); // blog ID of open menu
   const [menuPosition, setMenuPosition] = useState(null); // position for dropdown
   const { showSuccess, showError, showConfirm } = sweetAlert();
+  const navigate = useNavigate();
 
   // ✅ Fetch blogs
   useEffect(() => {
@@ -47,8 +48,8 @@ export default function BlogList() {
 
   // ✅ Edit blog
   const handleEdit = (id) => {
-    console.log("✏️ Edit blog:", id);
-    // TODO: navigate to blog edit page
+    // Navigate to the new dynamic edit route
+    navigate(`/dashboard/edit-blog/${id}`);
   };
 
   // ✅ Delete blog

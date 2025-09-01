@@ -100,8 +100,7 @@ export default function BlogView() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <Link
-            to={`/dashboard/edit-blog`}
-            state={{ blogId: blog._id }} // Pass blogId to edit page
+            to={`/dashboard/edit-blog/${blog._id}`}
             className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700"
           >
             <PencilIcon className="w-4 h-4" /> Edit

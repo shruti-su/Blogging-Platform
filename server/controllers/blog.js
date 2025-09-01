@@ -1,7 +1,7 @@
 const { validationResult } = require("express-validator");
 const Blog = require("../models/blogs");
 
-exports.addblog = async (req, res) => {
+exports.addBlog = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -40,10 +40,12 @@ exports.addblog = async (req, res) => {
     }
 };
 
-exports.getblog = async (req, res) => {
+exports.getAllBlogs = async (req, res) => {
     try {
-        const blogsFromDB = await Blog.find({ isActive: true }).sort({ createdAt: -1 }); // Get active blogs, sorted by creation date
-
+        // Get active blogs, sorted. Exclude large content field for list view efficiency.
+        const blogsFromDB = await Blog.find({ isActive: true })
+            .select('-blogContent')
+            .sort({ createdAt: -1 });
         // Manually convert Buffer to base64 string before sending to client
         const blogs = blogsFromDB.map(blog => {
             const blogObject = blog.toObject();
@@ -58,7 +60,7 @@ exports.getblog = async (req, res) => {
             return blogObject;
         });
 
-        res.status(200).json({ blogs: blogs });
+        res.status(200).json({ blogs });
     } catch (err) {
         console.error("❌ Error fetching blogs:", err);
         res.status(500).json({ error: "Internal server error" });

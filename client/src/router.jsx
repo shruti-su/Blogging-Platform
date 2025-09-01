@@ -17,6 +17,7 @@ import Unauthorised from "/src/pages/unauthorised/unauthorised";
 import AdminHome from "./pages/admin/AdminHome"; // Adjust the path as needed
 import UserManagement from "./pages/admin/user-management"; // Adjust the path as needed
 import BlogView from "@/pages/dashboard/blog/blog-view";
+import BlogEditPage from "@/pages/dashboard/blog/blog-edit";
 
 const icon = {
   className: "w-6 h-6 text-inherit",
@@ -76,8 +77,8 @@ export const routes = [
           </>
         ),
         name: "Edit Blog",
-        path: "/edit-blog",
-        element: <CreateBlog />,
+        path: "/edit-blog/:id",
+        element: <BlogEditPage />,
         sidebar: false,
       },
       {

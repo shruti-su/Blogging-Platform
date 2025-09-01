@@ -1,29 +1,34 @@
 const express = require("express");
 const router = express.Router();
-const blog = require("../controllers/blog");
+const blogController = require("../controllers/blog");
 const { check } = require("express-validator");
 
 const auth = require("../middleware/authMiddleware");
 
+// Reusable validation rules for creating/updating a blog
+const blogValidationRules = [
+    check("blogType", "Blog type is required").not().isEmpty(),
+    check("blogTitle", "Blog title is required").not().isEmpty(),
+    check("blogSubTitle", "Blog sub title is required").not().isEmpty(),
+    check("blogContent", "Blog content is required").not().isEmpty(),
+];
 
+// @route   POST /blogs/add
+// @desc    Add a new blog
+// @access  Private
 router.post(
     "/add",
-    // auth,
-    [
-        // Validation checks
-        check("blogType", "Blog type is required").not().isEmpty(),
-        check("blogTitle", "Blog title is required").not().isEmpty(),
-        check("blogSubTitle", "Blog sub title is required").not().isEmpty(),
-        check("blogContent", "Blog content is required").not().isEmpty(),
-    ],
-    blog.addblog
+    auth,
+    blogValidationRules,
+    blogController.addBlog
 );
 
-// 📋 [GET] List all students
+// @route   GET /blogs/get
+// @desc    Get all blogs
+// @access  Public
 router.get(
     "/get",
-    // auth,
-    blog.getblog
+    blogController.getAllBlogs
 );
 
 // @route   GET /blogs/get/:id
@@ -31,17 +36,17 @@ router.get(
 // @access  Public
 router.get(
     "/get/:id",
-    auth,
-    blog.getBlogById
+    blogController.getBlogById
 );
 
 // @route   PUT /blogs/update/:id
 // @desc    Update an existing blog
-// @access  Private (add auth middleware)
+// @access  Private
 router.put(
     "/update/:id",
     auth,
-    blog.updateBlog
+    blogValidationRules, // <-- FIX: Added validation middleware
+    blogController.updateBlog
 );
 
 // @route   DELETE /blogs/delete/:id
@@ -50,13 +55,7 @@ router.put(
 router.delete(
     "/delete/:id",
     auth,
-    blog.deleteBlog
+    blogController.deleteBlog
 );
-// router.post("/google-login", authcontroller.googleLogin);
-// router.post("/forgot-password", authcontroller.forgotPassword);
-// router.post("/verify-otp", authcontroller.verifyOtp);
-
-// // router.post("/forgot-password", authcontroller.forgotPassword);
-// router.post("/reset-password", authcontroller.resetPassword);
 
 module.exports = router;

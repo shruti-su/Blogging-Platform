@@ -33,7 +33,6 @@ exports.addblog = async (req, res) => {
         await newBlog.save();
         const blogResponse = newBlog.toObject();
         delete blogResponse.attachedImages; // Avoid sending large image buffers in the response
-
         res.status(201).json({ message: "Blog added successfully!", blog: blogResponse });
     } catch (err) {
         console.error("❌ Error adding blog:", err);
@@ -66,3 +65,20 @@ exports.getblog = async (req, res) => {
     }
 };
 
+exports.deleteblog = async (req, res) => {
+    const blogId = req.params.id;
+
+    try {
+        const deletedBlog = await Blog.findByIdAndDelete(blogId);
+
+        if (!deletedBlog) {
+            return res.status(404).json({ error: "Blog not found." });
+        }
+
+        res.status(200).json({ message: "Blog deleted successfully!" });
+
+    } catch (err) {
+        console.error("❌ Error deleting blog:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};

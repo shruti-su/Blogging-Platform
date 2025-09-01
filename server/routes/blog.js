@@ -24,6 +24,11 @@ router.get(
     // auth,
     blog.getblog
 );
+router.delete(
+    "/delete/:id",
+    // auth,
+    blog.deleteblog
+);
 // router.post("/google-login", authcontroller.googleLogin);
 // router.post("/forgot-password", authcontroller.forgotPassword);
 // router.post("/verify-otp", authcontroller.verifyOtp);

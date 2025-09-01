@@ -1,17 +1,20 @@
 // src/pages/dashboard/blog/blog-list.jsx
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import BlogService from "@/services/api/blog";
 import {
   EllipsisVerticalIcon,
   PencilIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 
+import BlogService from "@/services/api/blog";
+import { sweetAlert } from "../../../components/SweetAlert/SweetAlert";
+
 export default function BlogList() {
   const [blogs, setBlogs] = useState([]);
   const [openMenu, setOpenMenu] = useState(null); // blog ID of open menu
   const [menuPosition, setMenuPosition] = useState(null); // position for dropdown
+  const { showSuccess, showError, showConfirm } = sweetAlert();
 
   // ✅ Fetch blogs
   useEffect(() => {
@@ -48,9 +51,21 @@ export default function BlogList() {
   };
 
   // ✅ Delete blog
-  const handleDelete = (id) => {
-    console.log("🗑 Delete blog:", id);
-    // TODO: call delete API
+  const handleDelete = async (id) => {
+    const isConfirmed = await showConfirm(
+      "Are you sure you want to delete this blog? "
+    );
+    if (isConfirmed) {
+      try {
+        await BlogService.deleteBlog(id);
+        // Remove the deleted blog from the state to update the UI
+        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== id));
+        showSuccess("Blog deleted successfully!");
+      } catch (err) {
+        console.error("❌ Error deleting blog:", err);
+        showError("Failed to delete the blog. Please try again.");
+      }
+    }
   };
 
   return (

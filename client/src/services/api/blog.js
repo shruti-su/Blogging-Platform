@@ -24,7 +24,16 @@ const BlogService = {
             throw error; // Re-throw the error to be handled by the calling component   
         }
     },
-
+    deleteBlog: async (blogId) => {
+        try {
+            // Assumes the delete endpoint is 'blogs/delete/:id'
+            const response = await api.delete(`${USER_BASE_PATH}delete/${blogId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error deleting blog with ID ${blogId}:`, error);
+            throw error;
+        }
+    }
 };
 
 export default BlogService

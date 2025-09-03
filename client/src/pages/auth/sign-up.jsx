@@ -26,30 +26,37 @@ export function SignUp() {
   const categories = [
     {
       name: "Technology",
+      quote: "Code your journey.",
       image: "https://cdn-icons-png.flaticon.com/512/2721/2721263.png",
     },
     {
       name: "Travel",
+      quote: "Explore. Write. Inspire.",
       image: "https://cdn-icons-png.flaticon.com/512/854/854894.png",
     },
     {
       name: "Food",
+      quote: "Tastes that tell a story.",
       image: "https://cdn-icons-png.flaticon.com/512/1046/1046784.png",
     },
     {
       name: "Lifestyle",
+      quote: "Live. Share. Inspire.",
       image: "https://cdn-icons-png.flaticon.com/512/2921/2921822.png",
     },
     {
       name: "Education",
+      quote: "Knowledge is power.",
       image: "https://cdn-icons-png.flaticon.com/512/201/201818.png",
     },
     {
       name: "Business",
+      quote: "Ideas that matter.",
       image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
     },
     {
       name: "Health",
+      quote: "Wellness is wealth.",
       image: "https://cdn-icons-png.flaticon.com/512/2966/2966481.png",
     },
   ];
@@ -57,15 +64,18 @@ export function SignUp() {
   const categoryTemplate = (category) => (
     <motion.div
       whileHover={{ scale: 1.05 }}
-      className="flex flex-col items-center p-4 shadow-md bg-white/20 dark:bg-gray-700 rounded-xl"
+      className="flex flex-col items-center p-4 shadow-md bg-white/30 dark:bg-gray-700/70 backdrop-blur-md rounded-xl"
     >
       <img
         src={category.image}
         alt={category.name}
-        className="object-contain w-32 h-32"
+        className="object-contain w-28 h-28"
       />
-      <p className="mt-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <p className="mt-2 text-lg font-bold text-gray-900 dark:text-gray-100">
         {category.name}
+      </p>
+      <p className="mt-1 text-sm italic text-gray-600 dark:text-gray-300">
+        {category.quote}
       </p>
     </motion.div>
   );
@@ -133,19 +143,21 @@ export function SignUp() {
   };
 
   return (
-    <div className="flex min-h-screen transition-colors duration-300 bg-gray-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="flex min-h-screen transition-colors duration-300 bg-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Left side */}
-      <div className="items-center justify-center hidden w-1/2 p-10 text-white lg:flex">
+      <div className="items-center justify-center hidden w-1/2 p-10 lg:flex">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <h1 className="mb-4 text-4xl font-bold text-black dark:text-white drop-shadow-lg">
-            "Your Words Can Change the World"
+          <h1 className="mb-4 text-6xl font-sans font-bold text-gray-900 dark:text-white drop-shadow-lg">
+            Every Story Matters <br />
+            <span className="text-gray-800">— Start Yours Today!</span>
           </h1>
-          <p className="text-lg text-black opacity-90 dark:text-gray-300">
+
+          <p className="text-lg text-gray-700 dark:text-gray-300">
             Start sharing your journey today and inspire a community of readers.
           </p>
           <div className="mx-auto mt-10 w-72">
@@ -155,7 +167,7 @@ export function SignUp() {
               numVisible={1}
               numScroll={1}
               circular
-              autoplayInterval={2500}
+              autoplayInterval={3000}
             />
           </div>
         </motion.div>
@@ -170,7 +182,7 @@ export function SignUp() {
           className="w-full max-w-md p-8 transition-colors duration-300 bg-white shadow-lg dark:bg-gray-800 rounded-2xl"
         >
           <h2 className="mb-6 text-2xl font-bold text-center text-gray-900 dark:text-white">
-            {step === 1 ? "Create an Account" : "Enter OTP"}
+            {step === 1 ? "Create Your Free Account" : "Enter OTP"}
           </h2>
 
           {step === 1 && (
@@ -180,7 +192,7 @@ export function SignUp() {
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
+                  className="w-full px-3 py-2 bg-white border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                 />
                 <label htmlFor="name" className="dark:text-gray-300">
                   Your Name
@@ -193,7 +205,7 @@ export function SignUp() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
+                  className="w-full px-3 py-2 bg-white border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                 />
                 <label htmlFor="email" className="dark:text-gray-300">
                   Your Email
@@ -206,7 +218,7 @@ export function SignUp() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full"
-                  inputClassName="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
+                  inputClassName="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                   feedback={false}
                 />
                 <label htmlFor="password" className="dark:text-gray-300">
@@ -220,7 +232,7 @@ export function SignUp() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full"
-                  inputClassName="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
+                  inputClassName="w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                   feedback={false}
                 />
                 <label
@@ -264,7 +276,7 @@ export function SignUp() {
 
               <motion.div whileHover={{ scale: 1.02 }}>
                 <Button
-                  className="text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600"
+                  className="w-full text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600"
                   type="submit"
                 >
                   Send OTP
@@ -315,7 +327,7 @@ export function SignUp() {
                   id="otp"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400"
+                  className="w-full px-3 py-2 bg-white border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
                 />
                 <label htmlFor="otp" className="dark:text-gray-300">
                   Enter OTP
@@ -339,14 +351,18 @@ export function SignUp() {
 
               <motion.div whileHover={{ scale: 1.02 }}>
                 <Button
-                  className="text-white bg-green-600 hover:bg-green-700"
+                  className="w-full text-white bg-green-600 hover:bg-green-700"
                   type="submit"
                 >
                   Verify & Register
                 </Button>
               </motion.div>
 
-              <Button variant="outlined" onClick={() => setStep(1)}>
+              <Button
+                variant="outlined"
+                onClick={() => setStep(1)}
+                className="w-full"
+              >
                 Back
               </Button>
             </form>

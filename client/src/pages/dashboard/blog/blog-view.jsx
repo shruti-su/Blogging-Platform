@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { PencilIcon, CalendarIcon, ShareIcon } from "@heroicons/react/24/solid";
+import {
+  CalendarIcon,
+  ShareIcon,
+  HandThumbUpIcon,
+  HandThumbDownIcon,
+  UserCircleIcon,
+} from "@heroicons/react/24/solid";
 
 import BlogService from "@/services/api/blog";
+import VoteService from "@/services/api/vote";
+import CommentService from "@/services/api/comment";
 
 export default function BlogView() {
   const { id } = useParams(); // Get the 'id' from the URL parameter
@@ -12,25 +20,40 @@ export default function BlogView() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [copySuccess, setCopySuccess] = useState("");
 
+  // New state for social features
+  const [votes, setVotes] = useState({ likes: 0, dislikes: 0, userVote: null });
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
-    const fetchBlog = async () => {
+    const fetchBlogData = async () => {
       if (!id) return;
       setLoading(true);
       try {
-        // Assumes a getBlogById method exists in your service
-        const res = await BlogService.getBlogById(id);
-        setBlog(res.blog);
+        // Fetch blog, votes, and comments in parallel
+        const [blogRes, votesRes, commentsRes] = await Promise.all([
+          BlogService.getBlogById(id),
+          VoteService.getVotes(id),
+          CommentService.getComments(id),
+        ]);
+
+        setBlog(blogRes.blog);
+        setVotes(votesRes);
+        setComments(commentsRes.comments);
         setError(null);
       } catch (err) {
-        console.error(`❌ Error fetching blog with id ${id}:`, err);
-        setError("Failed to load the blog. It might not exist.");
+        console.error(`❌ Error fetching blog data for id ${id}:`, err);
+        setError(
+          "Failed to load the blog and its details. It might not exist."
+        );
         setBlog(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchBlog();
+    fetchBlogData();
   }, [id]); // Re-run the effect if the id from the URL changes
 
   const handleShare = () => {
@@ -51,6 +74,32 @@ export default function BlogView() {
         setTimeout(() => setCopySuccess(""), 2000);
       }
     );
+  };
+
+  const handleVote = async (type) => {
+    try {
+      const updatedVotes = await VoteService.castVote(id, type);
+      setVotes(updatedVotes);
+    } catch (err) {
+      console.error("Error casting vote:", err);
+      // Optionally show an error to the user
+    }
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      const res = await CommentService.postComment(id, newComment);
+      setComments([res.comment, ...comments]); // Add new comment to the top
+      setNewComment("");
+    } catch (err) {
+      console.error("Error posting comment:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -79,6 +128,27 @@ export default function BlogView() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 mt-9 bg-white rounded-xl shadow-md dark:bg-gray-800">
+      <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mt-2">
+        {blog.blogTitle}
+      </h1>
+      <div className="flex flex-row justify-between items-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400  dark:border-gray-700 mt-2 mb-4 border-b">
+        {blog.author && (
+          <div className="flex items-center gap-2">
+            <UserCircleIcon className="w-5 h-5" />
+            <span className="font-medium">{blog.author.name}</span>
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+          <CalendarIcon className="w-5 h-5" />
+          <span>
+            {new Date(blog.createdAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </span>
+        </div>
+      </div>
       {blog.attachedImages?.length > 0 && (
         <img
           src={`data:${blog.attachedImages[0].contentType};base64,${blog.attachedImages[0].data}`}
@@ -91,36 +161,117 @@ export default function BlogView() {
           <span className="inline-block bg-purple-100 text-purple-700 text-xs font-medium px-3 py-1 rounded-full dark:bg-purple-900/40 dark:text-purple-300">
             {blog.blogType}
           </span>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mt-2">
-            {blog.blogTitle}
-          </h1>
+
           <p className="text-lg text-gray-600 dark:text-gray-400 mt-1">
             {blog.blogSubTitle}
           </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0 mt-4 sm:mt-0">
-          <button
-            onClick={handleShare}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700"
-          >
-            <ShareIcon className="w-4 h-4" /> Share
-          </button>
-        </div>
       </div>
-      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-4 border-b dark:border-gray-700 pb-4 mb-4">
-        <CalendarIcon className="w-5 h-5" />
-        <span>
-          {new Date(blog.createdAt).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </span>
-      </div>
+
       <div
         className="prose prose-lg max-w-none dark:prose-invert"
         dangerouslySetInnerHTML={{ __html: blog.blogContent }}
       />
+
+      {/* --- Vote and Comment Section --- */}
+      <div className="mt-8 pt-6 border-t dark:border-gray-700 ">
+        {/* Vote Buttons */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <span className="font-semibold text-gray-700 dark:text-gray-300">
+              Did you find this post helpful?
+            </span>
+            <button
+              onClick={() => handleVote("like")}
+              className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm transition-colors ${
+                votes.userVote === "like"
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              }`}
+            >
+              <HandThumbUpIcon className="w-5 h-5" />
+              {votes.likes}
+            </button>
+            <button
+              onClick={() => handleVote("dislike")}
+              className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm transition-colors ${
+                votes.userVote === "dislike"
+                  ? "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              }`}
+            >
+              <HandThumbDownIcon className="w-5 h-5" />
+              {votes.dislikes}
+            </button>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 mt-4 sm:mt-0">
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700"
+            >
+              <ShareIcon className="w-4 h-4" /> Share
+            </button>
+          </div>
+        </div>
+
+        {/* Comment Form */}
+        <div className="mt-8">
+          <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+            Leave a Comment
+          </h3>
+          <form onSubmit={handleCommentSubmit}>
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Write your comment here..."
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+              rows="4"
+              disabled={isSubmitting}
+            ></textarea>
+            <button
+              type="submit"
+              disabled={isSubmitting || !newComment.trim()}
+              className="mt-3 px-6 py-2 font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Submitting..." : "Submit Comment"}
+            </button>
+          </form>
+        </div>
+
+        {/* Comments List */}
+        <div className="mt-8 space-y-6">
+          <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+            Comments ({comments.length})
+          </h3>
+          {comments.length > 0 ? (
+            comments.map((comment) => (
+              <div
+                key={comment._id}
+                className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg dark:bg-gray-900/50"
+              >
+                <UserCircleIcon className="w-10 h-10 text-gray-400 shrink-0" />
+                <div className="flex-grow">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-gray-800 dark:text-gray-200">
+                      {comment.author?.name || "Anonymous"}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {new Date(comment.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <p className="mt-1 text-gray-700 dark:text-gray-300">
+                    {comment.content}
+                  </p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400">
+              No comments yet. Be the first to comment!
+            </p>
+          )}
+        </div>
+      </div>
 
       {/* Share Modal */}
       {isShareModalOpen && (

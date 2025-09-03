@@ -39,7 +39,7 @@ function UploadBlog() {
     navigate("/dashboard/create-blog", { state: { title, category } });
   };
   return (
-    <div className="flex justify-center px-4 py-36 dark:bg-slate-900">
+    <div className="flex justify-center items-center min-h-[calc(100vh-140px)] px-4 py-12">
       <div className="w-full max-w-2xl p-6 bg-white shadow-lg dark:bg-gray-800 rounded-2xl sm:p-8 lg:p-10">
         {/* Header */}
         <div className="mb-6 text-center">

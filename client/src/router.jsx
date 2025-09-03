@@ -39,7 +39,7 @@ export const routes = [
         name: "blog-viewer",
         path: "/blog-viewer/:id",
         element: <BlogView />,
-        sidebar: true,
+        sidebar: false,
       },
       {
         icon: (

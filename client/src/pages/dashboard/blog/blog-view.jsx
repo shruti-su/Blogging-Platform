@@ -86,7 +86,7 @@ export default function BlogView() {
           className="w-full h-64 object-cover rounded-lg mb-6"
         />
       )}
-      <div className="flex justify-between items-start gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
         <div>
           <span className="inline-block bg-purple-100 text-purple-700 text-xs font-medium px-3 py-1 rounded-full dark:bg-purple-900/40 dark:text-purple-300">
             {blog.blogType}
@@ -98,13 +98,7 @@ export default function BlogView() {
             {blog.blogSubTitle}
           </p>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <Link
-            to={`/dashboard/edit-blog/${blog._id}`}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700"
-          >
-            <PencilIcon className="w-4 h-4" /> Edit
-          </Link>
+        <div className="flex items-center gap-2 shrink-0 mt-4 sm:mt-0">
           <button
             onClick={handleShare}
             className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700"

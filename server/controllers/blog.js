@@ -28,6 +28,7 @@ exports.addBlog = async (req, res) => {
             blogSubTitle,
             blogContent,
             attachedImages: imagesToStore,
+            author: req.user.id, // req.user is set by the auth middleware
         });
 
         await newBlog.save();
@@ -44,6 +45,7 @@ exports.getAllBlogs = async (req, res) => {
     try {
         // Get active blogs, sorted. Exclude large content field for list view efficiency.
         const blogsFromDB = await Blog.find({ isActive: true })
+            .populate('author', 'name') // Populate author's name
             .select('-blogContent')
             .sort({ createdAt: -1 });
         // Manually convert Buffer to base64 string before sending to client
@@ -69,7 +71,7 @@ exports.getAllBlogs = async (req, res) => {
 
 exports.getBlogById = async (req, res) => {
     try {
-        const blogFromDB = await Blog.findById(req.params.id);
+        const blogFromDB = await Blog.findById(req.params.id).populate('author', 'name');
 
         if (!blogFromDB || !blogFromDB.isActive) {
             return res.status(404).json({ error: "Blog not found." });
@@ -109,6 +111,11 @@ exports.updateBlog = async (req, res) => {
 
         if (!blog) {
             return res.status(404).json({ error: "Blog not found." });
+        }
+
+        // Check if the user owns the blog
+        if (blog.author.toString() !== req.user.id) {
+            return res.status(401).json({ error: "User not authorized to update this blog." });
         }
 
         const blogFields = {
@@ -154,12 +161,18 @@ exports.deleteBlog = async (req, res) => {
     const blogId = req.params.id;
 
     try {
-        const deletedBlog = await Blog.findByIdAndDelete(blogId);
+        const blog = await Blog.findById(blogId);
 
-        if (!deletedBlog) {
+        if (!blog) {
             return res.status(404).json({ error: "Blog not found." });
         }
 
+        // Check if the user owns the blog
+        if (blog.author.toString() !== req.user.id) {
+            return res.status(401).json({ error: "User not authorized to delete this blog." });
+        }
+
+        await blog.deleteOne();
         res.status(200).json({ message: "Blog deleted successfully!" });
 
     } catch (err) {
@@ -167,3 +180,29 @@ exports.deleteBlog = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+exports.getUserBlogs = async (req, res) => {
+    try {
+        // req.user.id comes from the auth middleware after decoding the JWT
+        const blogsFromDB = await Blog.find({ author: req.user.id })
+            .select('-blogContent') // Exclude content for list view
+            .sort({ createdAt: -1 });
+
+        // Convert image buffers to base64 for the client
+        const blogs = blogsFromDB.map(blog => {
+            const blogObject = blog.toObject();
+            if (blogObject.attachedImages && blogObject.attachedImages.length > 0) {
+                blogObject.attachedImages = blogObject.attachedImages.map(img => {
+                    if (img.data instanceof Buffer) {
+                        return { ...img, data: img.data.toString('base64') };
+                    }
+                    return img;
+                });
+            }
+            return blogObject;
+        });
+        res.status(200).json({ blogs });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+}

@@ -22,10 +22,12 @@ export default function BlogList() {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await BlogService.getAllBlogs();
+        // Fetch only the blogs for the currently logged-in user
+        const res = await BlogService.getUserBlogs();
         setBlogs(Array.isArray(res.blogs) ? res.blogs : []);
       } catch (err) {
-        console.error("❌ Error fetching blogs:", err);
+        console.error("❌ Error fetching user blogs:", err);
+        showError("Failed to load your blogs. Please try again.");
         setBlogs([]);
       }
     };
@@ -71,12 +73,13 @@ export default function BlogList() {
   };
 
   return (
-    <div className="w-full p-6 mt-9 bg-white rounded-xl shadow-md dark:bg-gray-800">
+    <div className="p-4 sm:p-6 mt-9 bg-white rounded-xl shadow-md dark:bg-gray-800">
       <h2 className="mb-4 text-2xl font-bold text-gray-800 dark:text-gray-100">
-        Blogs
+        My Blogs
       </h2>
 
-      <div className="overflow-hidden border border-gray-200 rounded-lg dark:border-gray-700">
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-hidden border border-gray-200 rounded-lg dark:border-gray-700">
         <table className="w-full text-left border-collapse">
           {/* Header */}
           <thead className="bg-purple-600">
@@ -97,7 +100,7 @@ export default function BlogList() {
           </thead>
 
           {/* Body */}
-          <tbody>
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {blogs.map((blog, i) => (
               <tr
                 key={blog._id}
@@ -109,7 +112,8 @@ export default function BlogList() {
               >
                 {/* Title + Image */}
                 <td className="px-6 py-4 flex items-center gap-3">
-                  {blog.attachedImages?.length > 0 ? (
+                  {blog.attachedImages?.length > 0 &&
+                  blog.attachedImages[0].data ? (
                     <img
                       src={`data:${blog.attachedImages[0].contentType};base64,${blog.attachedImages[0].data}`}
                       alt={blog.blogTitle}
@@ -155,20 +159,75 @@ export default function BlogList() {
                 </td>
               </tr>
             ))}
-
-            {blogs.length === 0 && (
-              <tr>
-                <td
-                  colSpan="4"
-                  className="px-6 py-6 text-center text-gray-500 dark:text-gray-400"
-                >
-                  No blogs available
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        {blogs.map((blog) => (
+          <div
+            key={blog._id}
+            className="relative p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg shadow"
+          >
+            <div className="flex items-start gap-4">
+              {/* Image */}
+              {blog.attachedImages?.length > 0 &&
+              blog.attachedImages[0].data ? (
+                <img
+                  src={`data:${blog.attachedImages[0].contentType};base64,${blog.attachedImages[0].data}`}
+                  alt={blog.blogTitle}
+                  className="h-16 w-16 rounded-lg object-cover flex-shrink-0"
+                />
+              ) : (
+                <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-200 text-gray-500 dark:bg-gray-600 dark:text-gray-400 flex-shrink-0">
+                  📷
+                </div>
+              )}
+              {/* Content */}
+              <div className="flex-grow">
+                <Link to={`/dashboard/blog-viewer/${blog._id}`}>
+                  <h3 className="text-md font-semibold text-blue-600 hover:underline dark:text-blue-400 pr-8">
+                    {blog.blogTitle}
+                  </h3>
+                </Link>
+                <span className="text-xs px-2 py-1 mt-1 inline-block rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
+                  {blog.blogType}
+                </span>
+                <p className="mt-2 text-xs text-gray-600 dark:text-gray-300">
+                  {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
+            </div>
+            {/* Actions Button */}
+            <div className="absolute top-2 right-2">
+              <button
+                onClick={(e) => handleMenuToggle(e, blog._id)}
+                className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+              >
+                <EllipsisVerticalIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* No Blogs Message */}
+      {blogs.length === 0 && (
+        <div className="py-10 text-center text-gray-500 dark:text-gray-400">
+          <p>You haven't written any blogs yet.</p>
+          <Link
+            to="/dashboard/upload-blog"
+            className="mt-4 inline-block px-4 py-2 text-sm font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700"
+          >
+            Create Your First Blog
+          </Link>
+        </div>
+      )}
 
       {/* Dropdown Menu Portal */}
       {openMenu &&

@@ -31,6 +31,14 @@ router.get(
     blogController.getAllBlogs
 );
 
+// @route   GET /blogs/user
+// @desc    Get all blogs for the logged-in user
+// @access  Private
+router.get(
+    "/userBlogs",
+    auth,
+    blogController.getUserBlogs
+);
 // @route   GET /blogs/get/:id
 // @desc    Get a single blog by ID
 // @access  Public

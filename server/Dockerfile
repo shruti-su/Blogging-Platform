@@ -6,9 +6,11 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all deps including devDependencies
-RUN npm install
+
 
 COPY . .
+
+RUN npm install
 
 EXPOSE 5500
 

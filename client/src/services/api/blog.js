@@ -32,6 +32,15 @@ const BlogService = {
             throw error;
         }
     },
+    getUserBlogs: async () => {
+        try {
+            const response = await api.get(`${BLOG_BASE_PATH}userBlogs`);
+            return response.data;
+        } catch (error) {
+            console.error('API Error: Could not fetch user blogs.', error);
+            throw error;
+        }
+    },
     getBlogById: async (blogId) => {
         try {
             const response = await api.get(`${BLOG_BASE_PATH}get/${blogId}`);

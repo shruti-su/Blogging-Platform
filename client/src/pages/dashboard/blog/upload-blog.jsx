@@ -36,7 +36,7 @@ function UploadBlog() {
       return;
     }
     // pass title & category to editor (state or params)
-    navigate("/dashboard/edit-blog", { state: { title, category } });
+    navigate("/dashboard/create-blog", { state: { title, category } });
   };
   return (
     <div className="flex justify-center px-4 py-36 dark:bg-slate-900">

@@ -62,6 +62,12 @@ export const routes = [
         sidebar: true,
       },
       {
+        name: "Create Blog",
+        path: "/create-blog",
+        element: <CreateBlog />,
+        sidebar: false,
+      },
+      {
         icon: (
           <>
             <svg

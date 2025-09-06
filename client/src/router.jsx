@@ -5,6 +5,7 @@ import {
   InformationCircleIcon,
   ServerStackIcon,
   RectangleStackIcon,
+  UsersIcon,
 } from "@heroicons/react/24/solid";
 import Home from "/src/pages/dashboard/home";
 import { SignIn, SignUp, Forgotpassword } from "/src/pages/auth";
@@ -18,6 +19,7 @@ import AdminHome from "./pages/admin/AdminHome"; // Adjust the path as needed
 import UserManagement from "./pages/admin/user-management"; // Adjust the path as needed
 import BlogView from "@/pages/dashboard/blog/blog-view";
 import BlogEditPage from "@/pages/dashboard/blog/blog-edit";
+import AllUsersPage from "@/pages/dashboard/all-users";
 
 const icon = {
   className: "w-6 h-6 text-inherit",
@@ -148,6 +150,13 @@ export const routes = [
         name: "Choose Blog Type",
         path: "/choose-blogtype",
         element: <ChooseBlogType />,
+        sidebar: true,
+      },
+      {
+        icon: <UsersIcon {...icon} />,
+        name: "Discover Users",
+        path: "/all-users",
+        element: <AllUsersPage />,
         sidebar: true,
       },
     ],

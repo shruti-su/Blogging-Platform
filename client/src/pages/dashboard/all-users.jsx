@@ -13,6 +13,19 @@ import followService from "@/services/api/followService";
 import { useAuth } from "@/components/auth/AuthContext";
 import { sweetAlert } from "@/components/SweetAlert/SweetAlert";
 
+const SkeletonUserCard = () => (
+  <div className="shadow-lg dark:bg-gray-800 rounded-xl p-4 animate-pulse flex items-center justify-between md:flex-col md:p-6">
+    <div className="flex items-center gap-4 md:flex-col">
+      <div className="w-16 h-16 rounded-full bg-gray-300 dark:bg-gray-700 md:w-24 md:h-24 md:mb-4"></div>
+      <div className="md:text-center">
+        <div className="h-5 bg-gray-300 dark:bg-gray-700 rounded w-32 mb-2"></div>
+        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-48 md:w-32"></div>
+      </div>
+    </div>
+    <div className="h-9 bg-gray-300 dark:bg-gray-700 rounded-md w-28 md:mt-4"></div>
+  </div>
+);
+
 export default function AllUsersPage() {
   const [users, setUsers] = useState([]);
   const [following, setFollowing] = useState(new Set());
@@ -81,8 +94,13 @@ export default function AllUsersPage() {
 
   if (loading) {
     return (
-      <div className="p-6 mt-9 text-center text-gray-500 dark:text-gray-400">
-        Loading users...
+      <div className="p-4 mt-9 sm:p-6">
+        <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded-md w-72 mb-6 animate-pulse"></div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <SkeletonUserCard key={index} />
+          ))}
+        </div>
       </div>
     );
   }
@@ -96,46 +114,49 @@ export default function AllUsersPage() {
       >
         Discover Other Users
       </Typography>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6">
         {users.map((user) => (
           <Card key={user._id} className="shadow-lg dark:bg-gray-800">
-            <CardBody className="flex flex-col items-center text-center">
-              <Avatar
-                src={`https://i.pravatar.cc/150?u=${user._id}`}
-                alt={user.name}
-                size="xl"
-                className="mb-4 border-2 border-blue-gray-100"
-              />
-              <Typography
-                variant="h6"
-                color="blue-gray"
-                className="dark:text-white"
-              >
-                {user.name}
-              </Typography>
-              <Typography
-                color="gray"
-                className="text-sm font-normal dark:text-gray-400"
-              >
-                {user.email}
-              </Typography>
-              <div className="mt-4">
+            <CardBody className="flex items-center justify-between p-4 md:flex-col md:items-center md:text-center md:p-6">
+              <div className="flex items-center gap-4 md:flex-col">
+                <Avatar
+                  src={`https://i.pravatar.cc/150?u=${user._id}`}
+                  alt={user.name}
+                  size="lg"
+                  className="border-2 border-blue-gray-100 md:w-24 md:h-24 md:mb-4"
+                />
+                <div>
+                  <Typography
+                    variant="h6"
+                    color="blue-gray"
+                    className="dark:text-white "
+                  >
+                    {user.name}
+                  </Typography>
+                  <Typography
+                    color="gray"
+                    className="text-sm font-normal dark:text-gray-400 "
+                  >
+                    {user.email}
+                  </Typography>
+                </div>
+              </div>
+              <div className="flex-shrink-0 md:mt-4">
                 {following.has(user._id) ? (
                   <Button
                     variant="outlined"
                     color="blue-gray"
                     size="sm"
-                    className="flex items-center gap-2"
+                    className="flex items-center justify-center w-28 gap-2"
                     onClick={() => handleUnfollow(user._id)}
                   >
                     <UserMinusIcon className="w-4 h-4" /> Unfollow
                   </Button>
                 ) : (
                   <Button
-                    variant="gradient"
                     color="blue"
                     size="sm"
-                    className="flex items-center gap-2"
+                    className="flex items-center justify-center w-28 gap-2"
                     onClick={() => handleFollow(user._id)}
                   >
                     <UserPlusIcon className="w-4 h-4" /> Follow

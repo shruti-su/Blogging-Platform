@@ -29,49 +29,56 @@ const BlogCard = ({ blog, onVoteUpdate }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-transform hover:scale-[1.02] duration-300">
-      {/* Card Header */}
-      <div className="p-4 flex items-center gap-3 border-b dark:border-gray-700">
-        <UserCircleIcon className="h-10 w-10 text-gray-400" />
-        <div>
-          <p className="font-semibold text-gray-800 dark:text-gray-200">
-            {blog.author.name}
-          </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {new Date(blog.createdAt).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-        </div>
-      </div>
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-transform hover:scale-[1.02] duration-300 flex flex-col">
+      <div className="flex justify-between items-start p-4 flex-grow">
+        {/* Left side content */}
+        <div className="flex-grow pr-4">
+          {/* Author Info */}
+          <div className="flex items-center gap-3 mb-4">
+            <UserCircleIcon className="h-10 w-10 text-gray-400" />
+            <div>
+              <p className="font-semibold text-gray-800 dark:text-gray-200">
+                {blog.author.name}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
+            </div>
+          </div>
 
-      {/* Card Body */}
-      <div className="p-4">
+          {/* Blog Title & Subtitle */}
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+            {blog.blogTitle}
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            {blog.blogSubTitle}
+          </p>
+          <Link
+            to={`/dashboard/blog-viewer/${blog._id}`}
+            className="inline-flex items-center gap-1 mt-4 font-semibold text-purple-600 dark:text-purple-400 hover:underline"
+          >
+            Read More <ArrowRightIcon className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* Right side image */}
         {blog.attachedImages?.length > 0 && (
-          <img
-            src={`data:${blog.attachedImages[0].contentType};base64,${blog.attachedImages[0].data}`}
-            alt={blog.blogTitle}
-            className="w-full h-48 object-cover rounded-lg mb-4"
-          />
+          <div className="flex-shrink-0">
+            <img
+              src={`data:${blog.attachedImages[0].contentType};base64,${blog.attachedImages[0].data}`}
+              alt={blog.blogTitle}
+              className="w-32 h-32 object-cover rounded-lg"
+            />
+          </div>
         )}
-        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-          {blog.blogTitle}
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
-          {blog.blogSubTitle}
-        </p>
-        <Link
-          to={`/dashboard/blog-viewer/${blog._id}`}
-          className="inline-flex items-center gap-1 mt-4 font-semibold text-purple-600 dark:text-purple-400 hover:underline"
-        >
-          Read More <ArrowRightIcon className="w-4 h-4" />
-        </Link>
       </div>
 
       {/* Card Footer */}
-      <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900/50">
+      <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-t dark:border-gray-700">
         <div className="flex justify-between items-center">
           {/* Vote Buttons */}
           <div className="flex items-center gap-3">
@@ -118,20 +125,30 @@ const BlogCard = ({ blog, onVoteUpdate }) => {
 };
 
 const SkeletonCard = () => (
-  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden animate-pulse">
-    <div className="p-4 flex items-center gap-3 border-b dark:border-gray-700">
-      <div className="h-10 w-10 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
-      <div className="flex-1">
-        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/3"></div>
-        <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-1/4 mt-2"></div>
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden animate-pulse flex flex-col">
+    <div className="flex justify-between items-start p-4 flex-grow">
+      {/* Left side skeleton */}
+      <div className="flex-grow pr-4">
+        {/* Author skeleton */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-10 w-10 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
+          <div className="flex-1">
+            <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/3"></div>
+            <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-1/4 mt-2"></div>
+          </div>
+        </div>
+        {/* Content skeleton */}
+        <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
+        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/4"></div>
+      </div>
+      {/* Right side image skeleton */}
+      <div className="flex-shrink-0">
+        <div className="w-32 h-32 bg-gray-300 dark:bg-gray-700 rounded-lg"></div>
       </div>
     </div>
-    <div className="p-4">
-      <div className="h-48 bg-gray-300 dark:bg-gray-700 rounded-lg mb-4"></div>
-      <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
-      <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mt-2"></div>
-    </div>
-    <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900/50">
+    {/* Footer skeleton */}
+    <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-t dark:border-gray-700">
       <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-1/4"></div>
     </div>
   </div>
@@ -169,25 +186,29 @@ function Home() {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto py-8 px-4 space-y-8">
-        <SkeletonCard />
-        <SkeletonCard />
+      <div className="py-8 px-4">
+        <div className="grid grid-cols-1 gap-8">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-20">
+      <div className="mx-auto max-w-2xl py-20 text-center">
         <p className="text-red-500">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-8 px-4">
+    <div className="py-8 px-4">
       {feed.length > 0 ? (
-        <div className="space-y-8">
+        <div className="grid grid-cols-1 gap-8 ">
           {feed.map((blog) => (
             <BlogCard
               key={blog._id}
@@ -197,7 +218,7 @@ function Home() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+        <div className="mx-auto max-w-2xl rounded-xl bg-white py-20 text-center shadow-md dark:bg-gray-800">
           <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
             Your Feed is Quiet
           </h3>

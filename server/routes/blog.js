@@ -31,6 +31,14 @@ router.get(
     blogController.getAllBlogs
 );
 
+// @route   GET /blogs/feed
+// @desc    Get blogs from followed users for the feed
+// @access  Private
+router.get(
+    "/feed",
+    auth,
+    blogController.getFeedBlogs
+);
 // @route   GET /blogs/user
 // @desc    Get all blogs for the logged-in user
 // @access  Private

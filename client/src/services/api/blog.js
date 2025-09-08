@@ -5,6 +5,15 @@ import api from './../axiosConfig';
 const BLOG_BASE_PATH = 'blogs/';
 
 const BlogService = {
+    getFeedBlogs: async () => {
+        try {
+            const response = await api.get(`${BLOG_BASE_PATH}feed`);
+            return response.data;
+        } catch (error) {
+            console.error('API Error: Could not fetch feed blogs.', error);
+            throw error;
+        }
+    },
     addBlog: async (blogData) => {
         try {
             const response = await api.post(`${BLOG_BASE_PATH}add`, blogData);

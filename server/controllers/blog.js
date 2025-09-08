@@ -1,5 +1,7 @@
 const { validationResult } = require("express-validator");
 const Blog = require("../models/blogs");
+const Follow = require("../models/Follow");
+const mongoose = require("mongoose");
 
 exports.addBlog = async (req, res) => {
     const errors = validationResult(req);
@@ -206,3 +208,118 @@ exports.getUserBlogs = async (req, res) => {
         res.status(500).send('Server Error');
     }
 }
+
+exports.getFeedBlogs = async (req, res) => {
+    try {
+        const currentUserId = new mongoose.Types.ObjectId(req.user.id);
+
+        // 1. Find users the current user is following
+        const following = await Follow.find({ follower: currentUserId }).select('following');
+        const followingIds = following.map(f => f.following);
+
+        // 2. Include the user's own posts in their feed
+        const authorIds = [...followingIds, currentUserId];
+
+        // 3. Aggregation pipeline to fetch blogs and related data efficiently
+        const blogsFromDB = await Blog.aggregate([
+            // Match blogs from followed users and the user themselves
+            {
+                $match: {
+                    author: { $in: authorIds },
+                    isActive: true
+                }
+            },
+            // Sort by most recent
+            { $sort: { createdAt: -1 } },
+            // Lookup author details
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'author',
+                    foreignField: '_id',
+                    as: 'author'
+                }
+            },
+            { $unwind: '$author' },
+            // Lookup all votes for the blog
+            {
+                $lookup: {
+                    from: 'votes',
+                    localField: '_id',
+                    foreignField: 'blog',
+                    as: 'votes'
+                }
+            },
+            // Lookup the last comment with its author
+            {
+                $lookup: {
+                    from: 'comments',
+                    let: { blogId: '$_id' },
+                    pipeline: [
+                        { $match: { $expr: { $eq: ['$blog', '$$blogId'] } } },
+                        { $sort: { createdAt: -1 } },
+                        { $limit: 1 },
+                        {
+                            $lookup: {
+                                from: 'users',
+                                localField: 'author',
+                                foreignField: '_id',
+                                as: 'authorInfo'
+                            }
+                        },
+                        { $unwind: { path: '$authorInfo', preserveNullAndEmptyArrays: true } },
+                        {
+                            $project: {
+                                _id: 1,
+                                content: 1,
+                                createdAt: 1,
+                                author: {
+                                    _id: '$authorInfo._id',
+                                    name: '$authorInfo.name'
+                                }
+                            }
+                        }
+                    ],
+                    as: 'lastComment'
+                }
+            },
+            // Reshape the data into the final format
+            {
+                $project: {
+                    blogTitle: 1,
+                    blogSubTitle: 1,
+                    blogType: 1,
+                    attachedImages: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    'author._id': 1,
+                    'author.name': 1,
+                    'author.profilePicture': 1,
+                    likes: { $size: { $filter: { input: '$votes', as: 'vote', cond: { $eq: ['$$vote.type', 'like'] } } } },
+                    dislikes: { $size: { $filter: { input: '$votes', as: 'vote', cond: { $eq: ['$$vote.type', 'dislike'] } } } },
+                    userVote: { $let: { vars: { userVoteDoc: { $filter: { input: '$votes', as: 'vote', cond: { $eq: ['$$vote.user', currentUserId] } } } }, in: { $ifNull: [{ $arrayElemAt: ['$$userVoteDoc.type', 0] }, null] } } },
+                    lastComment: { $ifNull: [{ $arrayElemAt: ['$lastComment', 0] }, null] }
+                }
+            }
+        ]);
+
+        // 4. Convert image buffers to base64 for client response
+        const blogs = blogsFromDB.map(blog => {
+            if (blog.attachedImages && blog.attachedImages.length > 0) {
+                blog.attachedImages = blog.attachedImages.map(img => {
+                    if (img.data instanceof Buffer) {
+                        return { ...img, data: img.data.toString('base64') };
+                    }
+                    return img;
+                });
+            }
+            return blog;
+        });
+
+        res.status(200).json({ blogs });
+
+    } catch (err) {
+        console.error("❌ Error fetching feed blogs:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};

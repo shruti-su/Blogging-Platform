@@ -56,11 +56,12 @@ app.get('/', async (req, res) => {
 });
 
 app.use('/auth', require('./routes/auth')); // <--- ADD THIS LINE: Use the auth routes
-app.use('/api', require('./routes/user'));
 app.use('/blogs', require('./routes/blog')); // <--- ADD THIS LINE: Use the blogs routes
 app.use('/categories', require('./routes/category')); // Use the category routes
 app.use('/votes', require('./routes/vote')); // Use the vote routes
 app.use('/comments', require('./routes/comment')); // Use the comment routes
+app.use('/users', require('./routes/followRoutes'));
+
 
 
 

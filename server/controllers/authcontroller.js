@@ -43,7 +43,8 @@ exports.login = async (req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role, // Include role in the payload
+                role: user.role,
+                profilePicture: user.profilePicture,
             },
         };
         user.lastLogin = new Date(); // Update last login time
@@ -184,7 +185,8 @@ exports.verifyOtp = async (req, res) => {
                                 id: user.id,
                                 name: user.name,
                                 email: user.email,
-                                role: user.role, // Include role in the payload
+                                role: user.role,
+                                profilePicture: user.profilePicture,
                             },
                         };
                         try {
@@ -211,7 +213,7 @@ exports.verifyOtp = async (req, res) => {
 }
 
 exports.googleLogin = async (req, res) => {
-    const { email, name } = req.body;
+    const { email, name, photoURL } = req.body;
 
     try {
         // Check if user already exists
@@ -222,7 +224,8 @@ exports.googleLogin = async (req, res) => {
                     id: user.id,
                     name: user.name,
                     email: user.email,
-                    role: user.role, // Include role in the payload
+                    role: user.role,
+                    profilePicture: user.profilePicture,
                 },
             };
             const token = jwt.sign(
@@ -238,7 +241,9 @@ exports.googleLogin = async (req, res) => {
             email,
             password: await bcrypt.hash('password', await bcrypt.genSalt(10)), // Placeholder password, not used for Google login
             role: 'user', // Default role for new users
-            lastLogin: new Date() // Set last login time
+            lastLogin: new Date(), // Set last login time
+            profilePicture: photoURL,
+            isActive: true, // Google users are active by default
         });
         await user.save();
         // Create JWT for the new user
@@ -247,8 +252,8 @@ exports.googleLogin = async (req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role, // Include role in the payload
-                lastLogin: new Date() // Set last login time
+                role: user.role,
+                profilePicture: user.profilePicture,
             },
         };
         const token = jwt.sign(

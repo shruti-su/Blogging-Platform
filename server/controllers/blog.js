@@ -45,7 +45,7 @@ exports.getAllBlogs = async (req, res) => {
     try {
         // Get active blogs, sorted. Exclude large content field for list view efficiency.
         const blogsFromDB = await Blog.find({ isActive: true })
-            .populate('author', 'name') // Populate author's name
+            .populate('author', 'name profilePicture') // Populate author's name and profile picture
             .select('-blogContent')
             .sort({ createdAt: -1 });
         // Manually convert Buffer to base64 string before sending to client
@@ -71,7 +71,7 @@ exports.getAllBlogs = async (req, res) => {
 
 exports.getBlogById = async (req, res) => {
     try {
-        const blogFromDB = await Blog.findById(req.params.id).populate('author', 'name');
+        const blogFromDB = await Blog.findById(req.params.id).populate('author', 'name profilePicture');
 
         if (!blogFromDB || !blogFromDB.isActive) {
             return res.status(404).json({ error: "Blog not found." });
@@ -183,7 +183,7 @@ exports.deleteBlog = async (req, res) => {
 exports.getUserBlogs = async (req, res) => {
     try {
         // req.user.id comes from the auth middleware after decoding the JWT
-        const blogsFromDB = await Blog.find({ author: req.user.id })
+        const blogsFromDB = await Blog.find({ author: req.user.id }).populate('author', 'name profilePicture')
             .select('-blogContent') // Exclude content for list view
             .sort({ createdAt: -1 });
 

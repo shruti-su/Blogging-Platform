@@ -13,37 +13,28 @@ export const AuthProvider = ({ children }) => {
     const storedToken = localStorage.getItem("token"); // Or get your token
     if (storedToken) {
       try {
-        const base64 = storedToken
-          .split(".")[1]
-          .replace(/-/g, "+")
-          .replace(/_/g, "/");
-        const json = decodeURIComponent(
-          atob(base64)
-            .split("")
-            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-            .join("")
-        );
+        const decoded = jwtDecode(storedToken);
         const currentTime = Date.now() / 1000;
-        if (JSON.parse(json).exp < currentTime) {
+        if (decoded.exp < currentTime) {
           console.error("Token has expired");
           localStorage.removeItem("token");
+          setUser(null);
+        } else {
+          setUser(decoded.user); // Set user from decoded token
         }
-
-        const parsedToken = JSON.parse(storedToken);
-        // You might want to validate the token with your backend here
-        // For simplicity, we'll just set the user
-        setUser(parsedToken);
       } catch (e) {
         console.error("Failed to parse token from localStorage", e);
         localStorage.removeItem("token"); // Clear corrupted data
+        setUser(null);
       }
     }
     setLoading(false); // Finished checking
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("token", JSON.stringify(userData)); // Store user data/token
+  const login = (token) => {
+    const decoded = jwtDecode(token);
+    setUser(decoded.user);
+    localStorage.setItem("token", token); // Store the raw JWT string
   };
 
   const logout = () => {

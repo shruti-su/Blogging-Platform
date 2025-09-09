@@ -211,16 +211,21 @@ exports.getUserBlogs = async (req, res) => {
 
 exports.getFeedBlogs = async (req, res) => {
     try {
+        // 1. Pagination parameters from query string
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 10; // Default to 10 blogs per page
+        const skip = (page - 1) * limit;
+
         const currentUserId = new mongoose.Types.ObjectId(req.user.id);
 
-        // 1. Find users the current user is following
+        // 2. Find users the current user is following
         const following = await Follow.find({ follower: currentUserId }).select('following');
         const followingIds = following.map(f => f.following);
 
-        // 2. Include the user's own posts in their feed
+        // 3. Include the user's own posts in their feed
         const authorIds = [...followingIds, currentUserId];
 
-        // 3. Aggregation pipeline to fetch blogs and related data efficiently
+        // 4. Aggregation pipeline to fetch blogs and related data efficiently
         const blogsFromDB = await Blog.aggregate([
             // Match blogs from followed users and the user themselves
             {
@@ -231,6 +236,9 @@ exports.getFeedBlogs = async (req, res) => {
             },
             // Sort by most recent
             { $sort: { createdAt: -1 } },
+            // Apply pagination
+            { $skip: skip },
+            { $limit: limit },
             // Lookup author details
             {
                 $lookup: {
@@ -303,7 +311,13 @@ exports.getFeedBlogs = async (req, res) => {
             }
         ]);
 
-        // 4. Convert image buffers to base64 for client response
+        // 5. Get total count for pagination metadata
+        const totalBlogs = await Blog.countDocuments({
+            author: { $in: authorIds },
+            isActive: true
+        });
+
+        // 6. Convert image buffers to base64 for client response
         const blogs = blogsFromDB.map(blog => {
             if (blog.attachedImages && blog.attachedImages.length > 0) {
                 blog.attachedImages = blog.attachedImages.map(img => {
@@ -316,7 +330,12 @@ exports.getFeedBlogs = async (req, res) => {
             return blog;
         });
 
-        res.status(200).json({ blogs });
+        res.status(200).json({
+            blogs,
+            currentPage: page,
+            totalPages: Math.ceil(totalBlogs / limit),
+            totalBlogs
+        });
 
     } catch (err) {
         console.error("❌ Error fetching feed blogs:", err);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import BlogService from "@/services/api/blog";
 import VoteService from "@/services/api/vote";
@@ -158,23 +158,38 @@ function Home() {
   const [feed, setFeed] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  const fetchFeed = useCallback(async (pageNum) => {
+    try {
+      setLoading(true);
+      const response = await BlogService.getFeedBlogs(pageNum);
+      // On first page, replace the feed. For subsequent pages, append.
+      if (pageNum === 1) {
+        setFeed(response.blogs || []);
+      } else {
+        setFeed((prevFeed) => [...prevFeed, ...(response.blogs || [])]);
+      }
+      setHasMore(response.currentPage < response.totalPages);
+    } catch (err) {
+      console.error("Failed to fetch feed:", err);
+      setError("Could not load your feed. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchFeed = async () => {
-      try {
-        setLoading(true);
-        const response = await BlogService.getFeedBlogs();
-        setFeed(response.blogs || []);
-      } catch (err) {
-        console.error("Failed to fetch feed:", err);
-        setError("Could not load your feed. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    // Fetch the initial page of the feed when the component mounts.
+    fetchFeed(1);
+  }, [fetchFeed]);
 
-    fetchFeed();
-  }, []);
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchFeed(nextPage);
+  };
 
   const handleVoteUpdate = (blogId, voteData) => {
     setFeed((currentFeed) =>
@@ -184,7 +199,7 @@ function Home() {
     );
   };
 
-  if (loading) {
+  if (loading && page === 1) {
     return (
       <div className="py-8 px-4">
         <div className="grid grid-cols-1 gap-8">
@@ -208,15 +223,28 @@ function Home() {
   return (
     <div className="py-8 px-4">
       {feed.length > 0 ? (
-        <div className="grid grid-cols-1 gap-8 ">
-          {feed.map((blog) => (
-            <BlogCard
-              key={blog._id}
-              blog={blog}
-              onVoteUpdate={handleVoteUpdate}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-8 ">
+            {feed.map((blog) => (
+              <BlogCard
+                key={blog._id}
+                blog={blog}
+                onVoteUpdate={handleVoteUpdate}
+              />
+            ))}
+          </div>
+          {hasMore && (
+            <div className="mt-8 text-center">
+              <button
+                onClick={handleLoadMore}
+                disabled={loading}
+                className="px-6 py-2 font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 disabled:bg-gray-400"
+              >
+                {loading ? "Loading..." : "Load More"}
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <div className="mx-auto max-w-2xl rounded-xl bg-white py-20 text-center shadow-md dark:bg-gray-800">
           <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">

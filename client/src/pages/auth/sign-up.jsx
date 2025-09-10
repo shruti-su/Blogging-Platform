@@ -143,7 +143,7 @@ export function SignUp() {
   };
 
   return (
-    <div className="flex min-h-screen transition-colors duration-300 bg-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="flex min-h-screen transition-colors duration-300 bg-gradient-to-r from-red-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Left side */}
       <div className="items-center justify-center hidden w-1/2 p-10 lg:flex">
         <motion.div
@@ -157,7 +157,7 @@ export function SignUp() {
             <span className="text-gray-800">— Start Yours Today!</span>
           </h1>
 
-          <p className="text-lg text-gray-700 dark:text-gray-300">
+          <p className="text-lg text-gray-700 dark:text-white">
             Start sharing your journey today and inspire a community of readers.
           </p>
           <div className="mx-auto mt-10 w-72">
@@ -296,7 +296,7 @@ export function SignUp() {
                 <Button
                   size="lg"
                   color="white"
-                  className="flex items-center justify-center gap-3 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                  className="w-full flex items-center justify-center gap-3 border border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                   onClick={loginWithGoogle}
                 >
                   <img

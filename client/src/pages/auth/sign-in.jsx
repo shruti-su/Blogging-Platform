@@ -7,6 +7,7 @@ import { signInWithPopup, auth, provider } from "@/firebase";
 import { motion } from "framer-motion";
 import { InputText } from "primereact/inputtext";
 import { FloatLabel } from "primereact/floatlabel";
+import { MdSecurity, MdLock, MdVerifiedUser } from "react-icons/md"; // Using React Icons for better quality
 
 export function SignIn() {
   const { login, userRole } = useAuth();
@@ -65,44 +66,68 @@ export function SignIn() {
       {/* Left Side - Background with text */}
       <div
         className="relative hidden w-1/2 mx-8 my-24 flex-col justify-center overflow-hidden rounded-2xl bg-cover bg-center px-16 md:flex"
-        style={{ backgroundImage: "url('/img/852.jpg')" }}
+        style={{
+          backgroundImage: "url('/img/3262567.jpg')", // Ensure you have this SVG or a similar one
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
         <div className="relative z-10 space-y-6">
-          <h1 className="text-5xl font-extrabold text-white leading-tight">
-            Welcome back.
-            <br />
-            <span className="text-indigo-400">Let’s keep writing.</span>
-          </h1>
-          <p className="text-lg text-gray-300 max-w-md">
-            Sign in to continue your stories, track growth, and connect with
-            readers.
-          </p>
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-6xl font-extrabold text-white leading-tight">
+              Welcome back.
+              <br />
+              <span className="text-indigo-400">Let’s keep writing.</span>
+            </h1>
+            <p className="text-xl text-gray-300 max-w-md mt-4">
+              Sign in to continue your stories, track growth, and connect with
+              readers.
+            </p>
+          </motion.div>
 
-          <div className="space-y-5">
-            {/* Feature Items */}
-            <div className="flex items-center gap-3">
-              <span className="rounded-full bg-green-900/50 p-2 text-green-300">
-                ✓
+          <div className="space-y-5 mt-8">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="flex items-center gap-4"
+            >
+              <span className="p-3 bg-green-500/20 text-green-400 rounded-full">
+                <MdSecurity size={24} />
               </span>
               <span className="font-semibold text-gray-200">
                 Secure authentication
               </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full bg-blue-900/50 p-2 text-blue-300">
-                🔒
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
+              className="flex items-center gap-4"
+            >
+              <span className="p-3 bg-blue-500/20 text-blue-400 rounded-full">
+                <MdLock size={24} />
               </span>
               <span className="font-semibold text-gray-200">
                 No password sharing
               </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full bg-purple-900/50 p-2 text-purple-300">
-                🛡️
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.4 }}
+              className="flex items-center gap-4"
+            >
+              <span className="p-3 bg-purple-500/20 text-purple-400 rounded-full">
+                <MdVerifiedUser size={24} />
               </span>
               <span className="font-semibold text-gray-200">Privacy-first</span>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -113,18 +138,18 @@ export function SignIn() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="w-full max-w-md p-8 bg-white shadow-lg rounded-2xl dark:bg-gray-800"
+          className="w-full max-w-lg p-8 bg-white shadow-lg rounded-2xl dark:bg-gray-800"
         >
           <div className="mb-8 text-center">
             <Typography
               variant="h2"
-              className="mb-2 text-3xl font-bold text-gray-900 dark:text-white"
+              className="mb-2 text-4xl font-bold text-gray-900 dark:text-white"
             >
               Sign In
             </Typography>
             <Typography
               variant="paragraph"
-              className="text-gray-600 dark:text-gray-400"
+              className="text-lg text-gray-600 dark:text-gray-400"
             >
               Enter your credentials to continue
             </Typography>
@@ -161,13 +186,14 @@ export function SignIn() {
 
             {/* Error */}
             {error && (
-              <Typography
-                variant="small"
-                color="red"
-                className="block text-center font-medium"
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="text-center text-sm font-medium text-red-500 bg-red-500/10 p-2 rounded-md"
               >
                 {error}
-              </Typography>
+              </motion.div>
             )}
 
             {/* Options */}
@@ -189,18 +215,17 @@ export function SignIn() {
                 }
                 containerProps={{ className: "-ml-2.5" }}
               />
-              <button
-                type="button"
-                onClick={() => navigate("/auth/forgot-password")}
+              <Link
+                to="/auth/forgot-password"
                 className="text-indigo-600 hover:underline dark:text-indigo-400"
               >
                 Forgot Password?
-              </button>
+              </Link>
             </div>
 
             {/* Sign In Button */}
             <Button
-              className="w-full bg-indigo-600 text-white shadow-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-400"
+              className="w-full bg-indigo-600 text-white shadow-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-400 transition-transform duration-200 hover:scale-[1.01]"
               type="submit"
             >
               Sign In
@@ -209,7 +234,7 @@ export function SignIn() {
             {/* Google Button */}
             <Button
               color="white"
-              className="w-full flex items-center justify-center gap-3 border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              className="w-full flex items-center justify-center gap-3 border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-transform duration-200 hover:scale-[1.01]"
               onClick={loginWithGoogle}
             >
               <svg width="18" height="18" viewBox="0 0 17 16" fill="none">
@@ -236,7 +261,7 @@ export function SignIn() {
             {/* Sign Up Link */}
             <Typography
               variant="small"
-              className="text-center text-gray-600 dark:text-gray-400"
+              className="text-center text-gray-600 dark:text-gray-400 mt-4"
             >
               Don’t have an account?{" "}
               <Link

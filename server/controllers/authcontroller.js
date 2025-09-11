@@ -219,6 +219,12 @@ exports.googleLogin = async (req, res) => {
         // Check if user already exists
         let user = await User.findOne({ email });
         if (user) { // If user exists, create JWT and return it
+            // If user logs in with Google, update profile picture if it's not set or different
+            if (photoURL && user.profilePicture !== photoURL) {
+                user.profilePicture = photoURL;
+                await user.save();
+            }
+
             const payload = {
                 user: {
                     id: user.id,

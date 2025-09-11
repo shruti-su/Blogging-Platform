@@ -107,7 +107,21 @@ export function ProfilePage() {
       <Card className="shadow-lg dark:bg-gray-800">
         <CardBody>
           <div className="flex flex-col items-center text-center md:flex-row md:items-start md:text-left md:gap-8">
-            <Avatar user={currentUser} size="xxl" className="mb-4 md:mb-0" />
+            {currentUser?.profilePicture ? (
+              <Avatar
+                image={currentUser.profilePicture}
+                size="xlarge"
+                shape="circle"
+                className="mb-4 h-[110px] w-[110px] md:mb-0"
+              />
+            ) : (
+              <Avatar
+                label={currentUser?.name?.[0]?.toUpperCase() || "A"}
+                size="xlarge"
+                shape="circle"
+                className="mb-4 h-[110px] w-[110px] bg-indigo-500 text-4xl text-white md:mb-0"
+              />
+            )}
             <div className="flex-grow">
               <Typography
                 variant="h4"

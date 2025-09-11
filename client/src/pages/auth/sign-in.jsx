@@ -51,6 +51,7 @@ export function SignIn() {
       await AuthService.googleLogin({
         email: user.email,
         name: user.displayName,
+        photoURL: user.photoURL,
       }).then((response) => {
         login(response.token);
         const role = userRole() || "user";

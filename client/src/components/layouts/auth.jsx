@@ -1,11 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 
-import { Navbar, Footer } from "/src/components/layouts/layout";
 import routes from "/src/router.jsx";
 
 export function Auth() {
-  
-
   return (
     <div className="relative w-full min-h-screen">
       <Routes>

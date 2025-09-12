@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Button, Input, Textarea, Switch } from "@material-tailwind/react";
+import {
+  Button,
+  Input,
+  Textarea,
+  Switch,
+  Typography,
+} from "@material-tailwind/react";
 import { Carousel } from "primereact/carousel";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
@@ -22,6 +28,7 @@ import {
   PencilIcon,
   UserPlusIcon,
   ShareIcon,
+  ArrowRightIcon,
 } from "@heroicons/react/24/outline";
 
 const features = [
@@ -82,6 +89,29 @@ const steps = [
   },
 ];
 
+const faqs = [
+  {
+    question: "Is my data secure?",
+    answer:
+      "Yes, your data is secure. We use industry-standard encryption and never share your data with third parties without your consent.",
+  },
+  {
+    question: "Can I customize my blog's appearance?",
+    answer:
+      "Absolutely! We offer a wide range of customizable themes and layouts to make your blog uniquely yours.",
+  },
+  {
+    question: "How can I monetize my blog?",
+    answer:
+      "We provide built-in tools for ads, affiliate links, and paid subscriptions to help you start earning from your content.",
+  },
+  {
+    question: "Is there a free plan available?",
+    answer:
+      "Yes, we offer a free plan with all the essential features to get you started. You can upgrade anytime for more advanced features.",
+  },
+];
+
 const testimonials = [
   {
     name: "Sophia Martinez",
@@ -114,6 +144,23 @@ const testimonials = [
       "The community here is amazing! I’ve connected with other writers, shared tips, and even collaborated on content. Blogging feels less lonely now.",
   },
 ];
+
+const SITEMAP = [
+  {
+    title: "Company",
+    links: ["About Us", "Careers", "Our Team", "Projects"],
+  },
+  {
+    title: "Help Center",
+    links: ["Discord", "Twitter", "GitHub", "Contact Us"],
+  },
+  {
+    title: "Resources",
+    links: ["Blog", "Newsletter", "Free Products", "Affiliate Program"],
+  },
+];
+
+const currentYear = new Date().getFullYear();
 
 const backgroundImages = [
   "/img/3834143.jpg",
@@ -397,9 +444,10 @@ export default function LandingPage() {
                   key={index}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
+                  transition={{ duration: 0.01 }}
                   viewport={{ once: true }}
-                  className="p-6 overflow-hidden transition-all duration-200 ease-in-out transform bg-white shadow-md feature-card rounded-xl  hover:shadow-lg dark:bg-gray-800 dark:hover:bg-gray-700"
+                  whileHover={{ scale: 1.05 }}
+                  className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300"
                 >
                   {/* Icon */}
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 rounded-full bg-orange-100 dark:bg-orange-500/20">
@@ -498,56 +546,96 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      {/* Contact Form / Newsletter */}
-      <section id="contact" className="px-6 py-24 bg-white dark:bg-gray-800">
-        <h2 className="mb-10 text-3xl font-semibold text-center">
-          Stay Updated
-        </h2>
-        <form className="grid max-w-xl gap-6 mx-auto">
-          <Input
-            size="lg"
-            label="Your Name"
-            color="indigo"
-            className="bg-white dark:bg-gray-900"
+      {/* Newsletter / CTA */}
+      <section className="py-20 bg-orange-500 text-white text-center">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-3xl md:text-4xl font-bold mb-4"
+        >
+          Be the first to know when new features drop
+        </motion.h2>
+        <p className="text-lg mb-8 opacity-90">
+          Subscribe to our newsletter and stay updated!
+        </p>
+        <div className="flex flex-col sm:flex-row justify-center max-w-md mx-auto">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            className="w-full px-4 py-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-600"
           />
-          <Input
-            size="lg"
-            label="Email Address"
-            color="indigo"
-            className="bg-white dark:bg-gray-900"
-          />
-          <Textarea
-            label="Message / Suggestion"
-            color="indigo"
-            className="bg-white dark:bg-gray-900"
-            rows={4}
-          />
-          <Button color="indigo" size="lg">
-            Send
-          </Button>
-        </form>
+          <button className="mt-4 sm:mt-0 sm:ml-3 px-6 py-3 bg-black rounded-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center space-x-2">
+            <span>Subscribe</span>
+            <ArrowRightIcon className="w-5 h-5" />
+          </button>
+        </div>
       </section>
       {/* FAQ Section */}
-      <footer className="px-6 py-24 text-gray-800 bg-gray-100 dark:bg-gray-900 dark:text-white">
-        <h2 className="mb-10 text-3xl font-semibold text-center">
-          Frequently Asked Questions
-        </h2>
-        <div className="max-w-3xl mx-auto space-y-6">
+      <section className="py-20 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-5xl mx-auto px-6">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-3xl md:text-4xl font-bold text-center mb-12"
+          >
+            Frequently Asked Questions
+          </motion.h2>
+
+          <div className="grid gap-8 md:grid-cols-2">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition"
+              >
+                <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
+                <p className="text-gray-600 dark:text-gray-300">{faq.answer}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-300 py-12">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h4 className="font-bold">Is my Excel data secure?</h4>
-            <p>
-              Yes. We never store your files and all processing is done
-              securely.
-            </p>
+            <h3 className="text-white font-bold mb-4">About</h3>
+            <p className="text-sm">A modern blogging platform for creators.</p>
           </div>
           <div>
-            <h4 className="font-bold">What file types are supported?</h4>
-            <p>Currently we support .xls, .xlsx, and .csv files.</p>
+            <h3 className="text-white font-bold mb-4">Links</h3>
+            <ul className="space-y-2 text-sm">
+              <li>Home</li>
+              <li>Features</li>
+              <li>Pricing</li>
+              <li>Contact</li>
+            </ul>
           </div>
           <div>
-            <h4 className="font-bold">Can I download the analysis?</h4>
-            <p>Yes. Visualizations and summaries can be exported easily.</p>
+            <h3 className="text-white font-bold mb-4">Legal</h3>
+            <ul className="space-y-2 text-sm">
+              <li>Privacy Policy</li>
+              <li>Terms of Service</li>
+            </ul>
           </div>
+          <div>
+            <h3 className="text-white font-bold mb-4">Follow Us</h3>
+            <div className="flex space-x-4">
+              <span>🐦</span>
+              <span>💼</span>
+              <span>💻</span>
+            </div>
+          </div>
+        </div>
+        <div className="mt-8 text-center text-sm text-gray-500">
+          © {new Date().getFullYear()} Blogging Platform. All rights reserved.
         </div>
       </footer>
     </div>

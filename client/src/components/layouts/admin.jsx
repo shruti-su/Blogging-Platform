@@ -2,11 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
 import { IconButton } from "@material-tailwind/react";
 
-import {
-  Sidenav,
-  DashboardNavbar,
-  Footer,
-} from "/src/components/layouts/layout";
+import { Sidenav, DashboardNavbar } from "/src/components/layouts/layout";
+// import { Footer } from "/src/components/layouts/layout/footer";
 
 import routes from "/src/router.jsx";
 

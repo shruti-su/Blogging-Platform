@@ -48,10 +48,14 @@ export function SignIn() {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      let photoURL = user.photoURL;
+      if (photoURL && photoURL.includes("googleusercontent.com")) {
+        photoURL = photoURL.split("=")[0] + "=s256-c";
+      }
       await AuthService.googleLogin({
         email: user.email,
         name: user.displayName,
-        photoURL: user.photoURL,
+        photoURL: photoURL,
       }).then((response) => {
         login(response.token);
         const role = userRole() || "user";

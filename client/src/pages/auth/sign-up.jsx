@@ -84,9 +84,14 @@ export function SignUp() {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      let photoURL = user.photoURL;
+      if (photoURL && photoURL.includes("googleusercontent.com")) {
+        photoURL = photoURL.split("=")[0] + "=s256-c";
+      }
       const response = await AuthService.googleLogin({
         email: user.email,
         name: user.displayName,
+        photoURL: photoURL,
       });
       login(response.token);
       navigate("/dashboard/Explore");

@@ -49,7 +49,7 @@ const AuthService = {
         } catch (error) {
             console.error('Error sending password reset email:', error);
             throw error; // Re-throw the error to be handled by the calling component
-        }      
+        }
     },
     resetPassword: async (resetData) => {
         try {
@@ -58,6 +58,35 @@ const AuthService = {
         } catch (error) {
             console.error('Error resetting password:', error);
             throw error; // Re-throw the error to be handled by the calling component
+        }
+    },
+    uploadProfilePicture: async (base64Image) => {
+        try {
+            // The endpoint is now under 'auth/'
+            // We send a JSON object, so the default 'application/json' header is used.
+            const response = await api.post(`${USER_BASE_PATH}upload-profile-picture`, { profilePicture: base64Image });
+            return response.data;
+        } catch (error) {
+            console.error('Error uploading profile picture:', error);
+            throw error;
+        }
+    },
+    updateProfile: async (profileData) => {
+        try {
+            const response = await api.put(`${USER_BASE_PATH}update-profile`, profileData);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            throw error;
+        }
+    },
+    getCurrentUser: async () => {
+        try {
+            const response = await api.get(`${USER_BASE_PATH}me`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching current user:', error);
+            throw error;
         }
     },
     /**

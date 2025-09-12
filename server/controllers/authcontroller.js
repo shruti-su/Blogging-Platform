@@ -44,7 +44,6 @@ exports.login = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                profilePicture: user.profilePicture,
             },
         };
         user.lastLogin = new Date(); // Update last login time
@@ -186,7 +185,6 @@ exports.verifyOtp = async (req, res) => {
                                 name: user.name,
                                 email: user.email,
                                 role: user.role,
-                                profilePicture: user.profilePicture,
                             },
                         };
                         try {
@@ -219,11 +217,7 @@ exports.googleLogin = async (req, res) => {
         // Check if user already exists
         let user = await User.findOne({ email });
         if (user) { // If user exists, create JWT and return it
-            // If user logs in with Google, update profile picture if it's not set or different
-            if (photoURL && user.profilePicture !== photoURL) {
-                user.profilePicture = photoURL;
-                await user.save();
-            }
+            // If user logs in with Google, update profile picture if it's different
 
             const payload = {
                 user: {
@@ -231,7 +225,6 @@ exports.googleLogin = async (req, res) => {
                     name: user.name,
                     email: user.email,
                     role: user.role,
-                    profilePicture: user.profilePicture,
                 },
             };
             const token = jwt.sign(
@@ -259,7 +252,6 @@ exports.googleLogin = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                profilePicture: user.profilePicture,
             },
         };
         const token = jwt.sign(
@@ -318,6 +310,84 @@ exports.forgotPassword = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to process forgot password request.', error: error.message });
     }
 
+};
+
+exports.updateProfile = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { name, email } = req.body;
+
+    try {
+        let user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        // If email is being updated, check if it's already taken by another user
+        if (email && email.toLowerCase() !== user.email.toLowerCase()) {
+            const existingUser = await User.findOne({ email: email.toLowerCase() });
+            if (existingUser) {
+                return res.status(400).json({ msg: 'Email is already in use' });
+            }
+        }
+
+        user.name = name || user.name;
+        user.email = email || user.email;
+
+        const updatedUser = await user.save();
+
+        res.json(updatedUser);
+
+    } catch (err) {
+        console.error('Error updating user profile:', err);
+        res.status(500).json({ msg: 'Server error' });
+    }
+};
+
+exports.getCurrentUser = async (req, res) => {
+    try {
+        // req.user.id is from the auth middleware, which decodes the JWT
+        const user = await User.findById(req.user.id).select('-password');
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+        res.json(user);
+    } catch (err) {
+        console.error('Error fetching current user:', err);
+        res.status(500).json({ msg: 'Server error' });
+    }
+};
+
+exports.uploadProfilePicture = async (req, res) => {
+    try {
+        const { profilePicture } = req.body; // Get base64 string from body
+
+        if (!profilePicture) {
+            return res.status(400).json({ msg: 'Please provide a profile picture.' });
+        }
+
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        user.profilePicture = profilePicture;
+        await user.save();
+
+        // Return the new base64 string so the client can update immediately
+        res.status(200).json({
+            msg: 'Profile picture updated successfully',
+            profilePicture: profilePicture
+        });
+
+    } catch (err) {
+        console.error('Error uploading profile picture:', err);
+        res.status(500).json({ msg: 'Server error' });
+    }
 };
 
 exports.resetPassword = async (req, res) => {

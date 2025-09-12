@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Button,
-  Card,
-  CardBody,
-  Typography,
-  Avatar,
-} from "@material-tailwind/react";
+import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { UserPlusIcon, UserMinusIcon } from "@heroicons/react/24/solid";
 
 import userService from "@/services/api/userService";
@@ -32,6 +26,13 @@ export default function AllUsersPage() {
   const [loading, setLoading] = useState(true);
   const { user: currentUser } = useAuth();
   const { showSuccess, showError } = sweetAlert();
+
+  const getHighResGooglePhoto = (url) => {
+    if (url && url.includes("googleusercontent.com") && url.includes("=")) {
+      return url.split("=")[0] + "=s256-c";
+    }
+    return url;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,6 +65,7 @@ export default function AllUsersPage() {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
   const handleFollow = async (userId) => {
@@ -119,12 +121,23 @@ export default function AllUsersPage() {
           <Card key={user._id} className="shadow-lg dark:bg-gray-800">
             <CardBody className="flex items-center justify-between p-4 md:flex-col md:items-center md:text-center md:p-6">
               <div className="flex items-center gap-4 md:flex-col">
-                <Avatar
-                  src={`https://i.pravatar.cc/150?u=${user._id}`}
-                  alt={user.name}
-                  size="lg"
-                  className="border-2 border-blue-gray-100 md:w-24 md:h-24 md:mb-4"
-                />
+                {user.profilePicture ? (
+                  <img
+                    src={
+                      user.profilePicture.startsWith("http")
+                        ? getHighResGooglePhoto(user.profilePicture)
+                        : user.profilePicture
+                    }
+                    alt={user.name}
+                    className="h-16 w-16 rounded-full object-cover border-2 border-blue-gray-100 md:w-24 md:h-24 md:mb-4"
+                  />
+                ) : (
+                  <div className="relative inline-flex items-center justify-center h-16 w-16 overflow-hidden bg-indigo-500 rounded-full md:w-24 md:h-24 md:mb-4 border-2 border-blue-gray-100">
+                    <span className="font-medium text-white text-2xl md:text-4xl">
+                      {user.name?.[0]?.toUpperCase() || "A"}
+                    </span>
+                  </div>
+                )}
                 <div>
                   <Typography
                     variant="h6"

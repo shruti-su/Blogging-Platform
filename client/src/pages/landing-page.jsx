@@ -12,34 +12,145 @@ import {
   ChartBarIcon,
   LockClosedIcon,
   BoltIcon,
+  PencilSquareIcon,
+  SparklesIcon,
+  DevicePhoneMobileIcon,
+  ShieldCheckIcon,
+  PaintBrushIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  PencilIcon,
+  UserPlusIcon,
+  ShareIcon,
 } from "@heroicons/react/24/outline";
+
+const features = [
+  {
+    name: "Easy Editor",
+    description:
+      "Write and format your blogs effortlessly with our intuitive editor.",
+    icon: PencilSquareIcon,
+  },
+  {
+    name: "SEO Optimized",
+    description:
+      "Reach more readers with built-in SEO tools and best practices.",
+    icon: ChartBarIcon,
+  },
+  {
+    name: "Custom Themes",
+    description:
+      "Choose from dozens of beautiful templates to personalize your blog.",
+    icon: PaintBrushIcon,
+  },
+  {
+    name: "Mobile Ready",
+    description: "Your blog looks perfect on any device, big or small.",
+    icon: DevicePhoneMobileIcon,
+  },
+  {
+    name: "Secure & Fast",
+    description:
+      "Hosted on a secure, blazing-fast infrastructure for peace of mind.",
+    icon: ShieldCheckIcon,
+  },
+  {
+    name: "AI Suggestions",
+    description: "Get AI-powered writing suggestions to improve your content.",
+    icon: SparklesIcon,
+  },
+];
+
+const steps = [
+  {
+    name: "Sign Up",
+    description:
+      "Create your free account in seconds and set up your personal blogging space.",
+    icon: UserPlusIcon,
+  },
+  {
+    name: "Write Your First Post",
+    description:
+      "Use our powerful editor to draft, format, and design your blog with ease.",
+    icon: PencilIcon,
+  },
+  {
+    name: "Share with the World",
+    description:
+      "Publish instantly and share your stories across social media platforms.",
+    icon: ShareIcon,
+  },
+];
 
 const testimonials = [
   {
-    name: "Shruti D.",
-    feedback: "Excel Analytics helped me visualize data instantly!",
-    position: "Frontend Developer",
-    image: "https://randomuser.me/api/portraits/women/75.jpg",
+    name: "Sophia Martinez",
+    role: "Lifestyle Blogger",
+    feedback:
+      "This platform gave me the tools to launch my blog in less than a week. The editor is super intuitive, and I can finally focus on writing instead of struggling with setup.",
   },
   {
-    name: "Sumit D.",
-    feedback: "The upload process is seamless and lightning-fast.",
-    position: "Data Analyst",
-    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    name: "James Carter",
+    role: "Tech Blogger",
+    feedback:
+      "I love the built-in SEO and analytics. My articles started ranking faster, and the dashboard makes it so easy to track growth. It's like having a mini marketing team!",
   },
   {
-    name: "Pooja R.",
-    feedback: "Dark mode and interactive charts are a game changer!",
-    position: "Business Analyst",
-    image: "https://randomuser.me/api/portraits/women/44.jpg",
+    name: "Aisha Khan",
+    role: "Food & Travel Blogger",
+    feedback:
+      "Switching to this platform was the best decision. The customizable themes make my blog look professional, and the mobile experience is flawless for my readers.",
   },
+  {
+    name: "Daniel Chen",
+    role: "Finance Blogger",
+    feedback:
+      "Monetization tools are a game-changer. I was able to integrate ads and subscriptions without coding. Finally, my blog is more than just a passion project.",
+  },
+  {
+    name: "Emily Johnson",
+    role: "Parenting Blogger",
+    feedback:
+      "The community here is amazing! I’ve connected with other writers, shared tips, and even collaborated on content. Blogging feels less lonely now.",
+  },
+];
+
+const backgroundImages = [
+  "/img/3834143.jpg",
+  "/img/travel2.jpg",
+  "/img/1701.jpg",
+  "/img/Education.jpg",
 ];
 
 export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const { isAuthenticated, userRole } = useAuth(); // Destructure the login function from useAuth\
+  const { isAuthenticated, userRole } = useAuth();
+  const [currentBackground, setCurrentBackground] = useState(0);
   const navigate = useNavigate();
+  const [index, setIndex] = useState(0);
+
+  const prev = () =>
+    setIndex((index - 1 + testimonials.length) % testimonials.length);
+  const next = () => setIndex((index + 1) % testimonials.length);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Cycle through the background images
+      setCurrentBackground((prev) => (prev + 1) % backgroundImages.length);
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval); // Cleanup on component unmount
+  }, []);
+
+  // Automatically cycle testimonials and reset timer on manual navigation
+  useEffect(() => {
+    const testimonialInterval = setInterval(() => {
+      setIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+    }, 5000); // Change every 5 seconds
+
+    return () => clearInterval(testimonialInterval);
+  }, [index]);
 
   const toggleDarkMode = () => {
     document.documentElement.classList.toggle("dark");
@@ -66,9 +177,9 @@ export default function LandingPage() {
     <div className="text-gray-900 transition duration-500 bg-white dark:bg-gray-900 dark:text-white">
       {/* Navbar */}
       <header className="sticky top-0 z-50 border-b border-gray-200 shadow-sm bg-white/80 dark:bg-gray-900/80 backdrop-blur dark:border-gray-700">
-        <div className="flex items-center justify-between px-4 py-4 mx-auto max-w-7xl">
+        <div className="flex items-center justify-between px-2 py-4 mx-auto max-w-7xl">
           <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-            Excel Analytics
+            Blogging Platform
           </h1>
           <nav className="items-center hidden gap-6 md:flex">
             <a href="#" className="font-medium hover:text-indigo-500">
@@ -154,175 +265,239 @@ export default function LandingPage() {
           </div>
         )}
       </header>
-
       {/* Hero Section */}
-      <section
-        className="relative flex flex-col items-center justify-between min-h-screen gap-2 px-6 py-24 shadow-md md:flex-row md:px-12 "
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="relative z-10 flex min-h-screen flex-col items-center justify-start pt-44 p-4 text-center overflow-hidden bg-cover bg-center transition-[background-image] duration-1000 ease-in-out"
         style={{
-          backgroundImage: `
-      radial-gradient(circle, #e0e7ff 1px, transparent 1px),
-      radial-gradient(circle, #e0e7ff 1px, transparent 1px)
-    `,
-          backgroundSize: "40px 40px",
-          backgroundPosition: "0 0, 20px 20px",
+          // You can replace this with your desired background image
+          // The background image will now cycle through the array
+          backgroundImage: `url(${backgroundImages[currentBackground]})`,
         }}
       >
-        {/* Text on the left */}
-        <motion.div
-          initial={{ opacity: 0, x: -40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="flex-1 text-center md:text-left"
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/60 z-10" />
+
+        {/* Hero Content */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-4xl font-extrabold leading-tight text-white md:text-5xl lg:text-6xl mb-4 z-20"
         >
-          <h1 className="text-4xl font-bold leading-tight text-gray-900 md:text-5xl dark:text-white">
-            Transform Excel Data Into Insights
-          </h1>
-          <p className="max-w-xl mt-4 text-lg text-gray-600 dark:text-gray-300">
-            Upload, Analyze, and Visualize Excel Files in Seconds.
-          </p>
-          <div className="flex justify-center gap-4 mt-6 md:justify-start">
-            <Button size="lg" color="indigo" onClick={go_to_dashboard_or_login}>
-              Get Started
-            </Button>
+          Publish your passions, your way
+        </motion.h1>
 
-            <Button size="lg" variant="outlined" color="indigo">
-              See Demo
-            </Button>
-          </div>
-        </motion.div>
-
-        {/* Image on the right */}
-        <motion.div
-          className="flex-1 w-full max-w-lg"
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          whileHover={{ scale: 1.03 }}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="text-lg md:text-xl lg:text-2xl text-gray-200 mb-8 max-w-2xl font-light z-20"
         >
-          <motion.img
-            src="/img/charts.png"
-            alt="Excel Analytics"
-            className="w-full shadow-xl rounded-xl hover:shadow-2xl"
-            whileHover={{
-              rotate: [0, 2, -2, 0],
-              transition: { duration: 0.6, ease: "easeInOut" },
-            }}
-            whileTap={{ scale: 0.97 }}
-            drag
-            dragElastic={0.18}
-            dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-          />
-        </motion.div>
-      </section>
+          Create a unique and beautiful blog easily.
+        </motion.p>
 
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="py-3 px-10 text-lg font-semibold bg-orange-500 hover:bg-orange-600 transition-colors duration-300 rounded-full text-white shadow-xl z-20"
+        >
+          CREATE YOUR BLOG
+        </motion.button>
+      </motion.section>
       {/* Features Section */}
-      <section
-        id="features"
-        className="px-6 py-24 bg-white shadow-md dark:bg-gray-800"
-      >
-        <h2 className="mb-12 text-3xl font-semibold text-center text-gray-900 dark:text-white">
-          Why Excel Analytics?
-        </h2>
+      <section className="py-20 bg-white dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-2 text-center">
+          {/* Features Grid */}
+          <div className="p-12 bg-gray-100 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl">
+            {/* Section Heading */}
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4"
+            >
+              Why Choose Our Platform?
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="text-lg text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto"
+            >
+              Everything you need to create, grow, and share your blog —
+              beautifully and effortlessly.
+            </motion.p>
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.01 }}
+                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.05 }}
+                  className="p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300"
+                >
+                  {/* Icon */}
+                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 rounded-full bg-orange-100 dark:bg-orange-500/20">
+                    <feature.icon className="w-8 h-8 text-orange-500" />
+                  </div>
 
-        <div className="grid grid-cols-1 gap-6 text-center md:grid-cols-4">
-          {/* Feature 1 */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.5 }}
-            className="p-6 bg-gray-100 shadow dark:bg-gray-700 rounded-xl hover:shadow-2xl"
-          >
-            <ArrowUpTrayIcon className="w-10 h-10 mx-auto mb-3 text-indigo-600 dark:text-indigo-400" />
-            <p className="text-lg font-medium text-gray-900 dark:text-white">
-              Quick Uploads
-            </p>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              Instantly drag and drop Excel files into the dashboard.
-            </p>
-          </motion.div>
+                  {/* Title */}
+                  <h3 className="text-xl font-bold text-black dark:text-white mb-2">
+                    {feature.name}
+                  </h3>
 
-          {/* Feature 2 */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="p-6 bg-gray-100 shadow dark:bg-gray-700 rounded-xl hover:shadow-2xl"
-          >
-            <ChartBarIcon className="w-10 h-10 mx-auto mb-3 text-indigo-600 dark:text-indigo-400" />
-            <p className="text-lg font-medium text-gray-900 dark:text-white">
-              Real-time Charts
-            </p>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              Generate dynamic charts immediately after upload.
-            </p>
-          </motion.div>
-
-          {/* Feature 3 */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="p-6 bg-gray-100 shadow dark:bg-gray-700 rounded-xl hover:shadow-2xl"
-          >
-            <LockClosedIcon className="w-10 h-10 mx-auto mb-3 text-indigo-600 dark:text-indigo-400" />
-            <p className="text-lg font-medium text-gray-900 dark:text-white">
-              Data Privacy
-            </p>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              Your data remains secure and is never stored.
-            </p>
-          </motion.div>
-
-          {/* Feature 4 */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="p-6 bg-gray-100 shadow dark:bg-gray-700 rounded-xl hover:shadow-2xl"
-          >
-            <BoltIcon className="w-10 h-10 mx-auto mb-3 text-indigo-600 dark:text-indigo-400" />
-            <p className="text-lg font-medium text-gray-900 dark:text-white">
-              Fast Analysis
-            </p>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              Get insights from large Excel datasets in seconds.
-            </p>
-          </motion.div>
+                  {/* Description */}
+                  <p className="text-gray-900 dark:text-gray-300">
+                    {feature.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
+      {/* Steps Section */}{" "}
+      <section className="py-20 bg-white dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-2 text-center">
+          <div className="p-12 bg-gray-200 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl">
+            {/* Heading */}
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4"
+            >
+              How It Works
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="text-lg text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto"
+            >
+              Get started with blogging in just three simple steps.
+            </motion.p>
 
-      {/* Testimonials Section */}
-      <section
-        id="testimonials"
-        className="px-6 py-24 bg-indigo-50 dark:bg-gray-900"
-      >
-        <h2 className="mb-12 text-3xl font-semibold text-center">
-          What Our Users Say
-        </h2>
-        <Carousel
-          value={testimonials}
-          itemTemplate={(item) => (
-            <div className="max-w-md p-6 mx-auto text-center bg-white shadow dark:bg-gray-800 rounded-xl">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-16 h-16 mx-auto mb-4 rounded-full"
-              />
-              <p className="italic">“{item.feedback}”</p>
-              <h4 className="mt-4 font-semibold">- {item.name}</h4>
-              <span className="text-sm text-gray-500">{item.position}</span>
+            {/* Steps */}
+            <div className="grid gap-10 md:grid-cols-3">
+              {steps.map((step, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
+                  className="p-6 overflow-hidden transition-all duration-200 ease-in-out transform bg-white shadow-md feature-card rounded-xl  hover:shadow-lg dark:bg-gray-800 dark:hover:bg-gray-700"
+                >
+                  {/* Icon */}
+                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 rounded-full bg-orange-100 dark:bg-orange-500/20">
+                    <step.icon className="w-8 h-8 text-orange-500" />
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+                    {step.name}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {step.description}
+                  </p>
+                </motion.div>
+              ))}
             </div>
-          )}
-          numVisible={1}
-          circular
-          autoplayInterval={4000}
-        />
+          </div>
+        </div>
       </section>
+      {/* Testimonials Section */}
+      <section className="py-20 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-12">
+            What Our Users Say
+          </h2>
 
+          {/* Cards */}
+          <div className="relative flex items-center justify-center">
+            <button
+              onClick={prev}
+              className="absolute left-0 z-10 p-3 bg-white rounded-full shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
+            >
+              <ChevronLeftIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+            </button>
+
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.4 }}
+              className="w-full"
+            >
+              <div className="mx-auto max-w-lg bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-md flex flex-col text-left">
+                <span className="text-6xl text-black dark:text-white mb-2">
+                  <svg
+                    className="w-12 h-12"
+                    viewBox="0 0 32 32"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14.505 5.873C10.568 8.393 8.6 11.43 8.6 14.98c0 1.105.193 1.657.577 1.657l.396-.107c.312-.12.563-.18.756-.18c1.127 0 2.07.41 2.825 1.23c.756.82 1.134 1.83 1.134 3.036c0 1.157-.41 2.14-1.225 2.947c-.816.807-1.8 1.21-2.952 1.21c-1.608 0-2.935-.66-3.98-1.983c-1.043-1.32-1.564-2.98-1.564-4.977c0-2.26.442-4.327 1.33-6.203c.89-1.875 2.244-3.57 4.068-5.085c1.824-1.514 2.988-2.272 3.492-2.272c.336 0 .612.162.828.486c.216.323.324.605.324.845l-.107.288zm12.96 0c-3.937 2.52-5.904 5.556-5.904 9.108c0 1.105.193 1.657.577 1.657l.396-.107c.312-.12.563-.18.756-.18c1.103 0 2.04.41 2.807 1.23c.77.82 1.152 1.83 1.152 3.036c0 1.157-.41 2.14-1.225 2.947c-.816.807-1.8 1.21-2.952 1.21c-1.608 0-2.935-.66-3.98-1.983c-1.043-1.32-1.564-2.98-1.564-4.977c0-2.284.448-4.37 1.35-6.256c.9-1.887 2.255-3.577 4.067-5.067C24.76 5 25.917 4.254 26.42 4.254c.337 0 .613.162.83.486c.215.324.323.606.323.846l-.108.287z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+                <div className="flex mb-3 text-orange-500">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i}>★</span>
+                  ))}
+                </div>
+                <p className="text-xl font-bold leading-relaxed text-gray-700 dark:text-gray-300 mb-4">
+                  “{testimonials[index].feedback}”
+                </p>
+                <div>
+                  <h4 className="text-xl font-semibold text-purple-600">
+                    {testimonials[index].name}
+                  </h4>
+                  <p className="text-base text-gray-500">
+                    {testimonials[index].role}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            <button
+              onClick={next}
+              className="absolute right-0 z-10 p-3 bg-white rounded-full shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
+            >
+              <ChevronRightIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+            </button>
+          </div>
+
+          {/* Dots */}
+          <div className="flex justify-center mt-6 space-x-2">
+            {testimonials.map((_, i) => (
+              <span
+                key={i}
+                className={`h-2 w-2 rounded-full ${
+                  index === i ? "bg-purple-600" : "bg-gray-300 dark:bg-gray-600"
+                }`}
+              ></span>
+            ))}
+          </div>
+        </div>
+      </section>
       {/* Contact Form / Newsletter */}
       <section id="contact" className="px-6 py-24 bg-white dark:bg-gray-800">
         <h2 className="mb-10 text-3xl font-semibold text-center">
@@ -352,7 +527,6 @@ export default function LandingPage() {
           </Button>
         </form>
       </section>
-
       {/* FAQ Section */}
       <footer className="px-6 py-24 text-gray-800 bg-gray-100 dark:bg-gray-900 dark:text-white">
         <h2 className="mb-10 text-3xl font-semibold text-center">

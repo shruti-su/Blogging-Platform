@@ -182,6 +182,13 @@ export default function LandingPage() {
   const next = () => setIndex((index + 1) % testimonials.length);
 
   useEffect(() => {
+    document.documentElement.style.scrollBehavior = "smooth";
+    return () => {
+      document.documentElement.style.scrollBehavior = "auto";
+    };
+  }, []);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       // Cycle through the background images
       setCurrentBackground((prev) => (prev + 1) % backgroundImages.length);
@@ -235,6 +242,9 @@ export default function LandingPage() {
             <a href="#features" className="font-medium hover:text-indigo-500">
               Features
             </a>
+            <a href="#steps" className="font-medium hover:text-indigo-500">
+              Steps
+            </a>
             <a
               href="#testimonials"
               className="font-medium hover:text-indigo-500"
@@ -280,6 +290,9 @@ export default function LandingPage() {
             </a>
             <a href="#features" className="hover:text-indigo-500">
               Features
+            </a>
+            <a href="#steps" className="hover:text-indigo-500">
+              Steps
             </a>
             <a href="#testimonials" className="hover:text-indigo-500">
               Testimonials
@@ -414,7 +427,7 @@ export default function LandingPage() {
         </div>
       </section>
       {/* Steps Section */}{" "}
-      <section className="py-20 bg-white dark:bg-gray-900">
+      <section id="steps" className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-2 text-center">
           <div className="p-12 bg-gray-200 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl">
             {/* Heading */}
@@ -470,7 +483,7 @@ export default function LandingPage() {
         </div>
       </section>
       {/* Testimonials Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
+      <section id="testimonals" className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-12">
             What Our Users Say
@@ -546,30 +559,119 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      {/* Newsletter / CTA */}
-      <section className="py-20 bg-orange-500 text-white text-center">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-3xl md:text-4xl font-bold mb-4"
-        >
-          Be the first to know when new features drop
-        </motion.h2>
-        <p className="text-lg mb-8 opacity-90">
-          Subscribe to our newsletter and stay updated!
-        </p>
-        <div className="flex flex-col sm:flex-row justify-center max-w-md mx-auto">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="w-full px-4 py-3 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-600"
-          />
-          <button className="mt-4 sm:mt-0 sm:ml-3 px-6 py-3 bg-black rounded-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center space-x-2">
-            <span>Subscribe</span>
-            <ArrowRightIcon className="w-5 h-5" />
-          </button>
+      {/* Contact Section */}
+      <section className="py-20 bg-gradient-to-b from-white via-orange-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+          {/* Left Side: Info */}
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-6">
+              Get in Touch
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+              Have questions or feedback? We'd love to hear from you. Reach out
+              using the form or through our contact details.
+            </p>
+
+            <ul className="space-y-4 text-gray-700 dark:text-gray-300">
+              <li className="flex items-center space-x-3">
+                <svg
+                  className="w-6 h-6 text-orange-500"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-9 13l-7-5V6a2 2 0 012-2h10a2 2 0 012 2v10l-7 5z"
+                  />
+                </svg>
+                <span>hello@myblog.com</span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <svg
+                  className="w-6 h-6 text-teal-500"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 5a2 2 0 012-2h3.28a2 2 0 011.94 1.5l.62 2.48a2 2 0 01-.45 1.82l-1.2 1.2a11.05 11.05 0 005.2 5.2l1.2-1.2a2 2 0 011.82-.45l2.48.62a2 2 0 011.5 1.94V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z"
+                  />
+                </svg>
+                <span>+91 98765 43210</span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <svg
+                  className="w-6 h-6 text-orange-500"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17.657 16.657L13.414 12.414m0 0a4 4 0 10-5.657-5.657 4 4 0 005.657 5.657z"
+                  />
+                </svg>
+                <span>Kolkata, India</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Right Side: Form */}
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl">
+            <form className="space-y-6">
+              <div>
+                <label className="block text-gray-700 dark:text-gray-200 mb-2 font-medium">
+                  Your Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter your name"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 
+              focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-teal-400
+              bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 dark:text-gray-200 mb-2 font-medium">
+                  Your Email
+                </label>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 
+              focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-teal-400
+              bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 dark:text-gray-200 mb-2 font-medium">
+                  Message
+                </label>
+                <textarea
+                  rows="5"
+                  placeholder="Type your message..."
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 
+              focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-teal-400
+              bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200"
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                className="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-orange-500 to-teal-500 
+            text-white font-semibold shadow-md hover:opacity-90 transition"
+              >
+                Send Message
+              </button>
+            </form>
+          </div>
         </div>
       </section>
       {/* FAQ Section */}

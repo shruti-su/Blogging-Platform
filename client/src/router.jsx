@@ -146,7 +146,7 @@ export const routes = [
       {
         icon: <HomeIcon {...icon} />,
         name: "Admin Dashboard",
-        path: "/",
+        path: "/admin-home",
         element: <AdminHome />,
         sidebar: true,
       },

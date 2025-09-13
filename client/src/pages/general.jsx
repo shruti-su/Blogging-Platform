@@ -17,7 +17,7 @@ function General() {
 
   useEffect(() => {
     if (userRole() === "admin") {
-      navigate("/admin/");
+      navigate("/admin/admin-home");
     } else if (userRole() === "user") {
       navigate("/dashboard/Explore");
     } else {

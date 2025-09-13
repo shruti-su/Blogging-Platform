@@ -222,7 +222,7 @@ export default function LandingPage() {
     try {
       if (isAuthenticated == true) {
         if (userRole() === "admin") {
-          navigate("/admin/");
+          navigate("/admin/admin-home");
         } else if (userRole() === "user") {
           navigate("/dashboard/Explore");
         } else {

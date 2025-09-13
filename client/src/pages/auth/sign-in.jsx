@@ -30,7 +30,7 @@ export function SignIn() {
       if (response.msg === "Logged in successfully!") {
         login(response.token);
         const role = userRole() || "user";
-        navigate(role === "admin" ? "/admin/" : "/dashboard/Explore");
+        navigate(role === "admin" ? "/admin/admin-home" : "/dashboard/Explore");
       } else {
         setError("Invalid email or password. Please try again.");
       }
@@ -59,7 +59,7 @@ export function SignIn() {
       }).then((response) => {
         login(response.token);
         const role = userRole() || "user";
-        navigate(role === "admin" ? "/admin/" : "/dashboard/Explore");
+        navigate(role === "admin" ? "/admin/admin-home" : "/dashboard/Explore");
       });
     } catch (error) {
       console.error("Login error:", error);

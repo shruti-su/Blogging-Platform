@@ -371,7 +371,7 @@ export default function LandingPage() {
         </motion.button>
       </motion.section>
       {/* Features Section */}
-      <section className="py-20 bg-white dark:bg-gray-900">
+      <section id="features" className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-2 text-center">
           {/* Features Grid */}
           <div className="p-12 bg-gray-100 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl">
@@ -426,7 +426,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      {/* Steps Section */}{" "}
+      {/* Steps Section */}
       <section id="steps" className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-2 text-center">
           <div className="p-12 bg-gray-200 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-2xl">
@@ -560,7 +560,10 @@ export default function LandingPage() {
         </div>
       </section>
       {/* Contact Section */}
-      <section className="py-20 bg-gradient-to-b from-white via-orange-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <section
+        id="contact"
+        className="py-20 bg-gradient-to-b from-white via-orange-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"
+      >
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
           {/* Left Side: Info */}
           <div>

@@ -206,6 +206,14 @@ export default function LandingPage() {
     return () => clearInterval(testimonialInterval);
   }, [index]);
 
+  const handleCreateBlogClick = () => {
+    if (isAuthenticated) {
+      navigate("/dashboard/upload-blog");
+    } else {
+      navigate("/auth/sign-up");
+    }
+  };
+
   const toggleDarkMode = () => {
     document.documentElement.classList.toggle("dark");
     setDarkMode(!darkMode);
@@ -360,6 +368,7 @@ export default function LandingPage() {
         </motion.p>
 
         <motion.button
+          onClick={handleCreateBlogClick}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}

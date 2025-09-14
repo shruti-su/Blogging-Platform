@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator'); // For input validation
 const User = require('../models/User');
 const nodemailer = require('nodemailer');
+const LoginActivity = require('../models/LoginActivity');
 const OTP = require('../models/otp'); // Import OTP model
 
 
@@ -36,6 +37,10 @@ exports.login = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
+
+        // Log the successful login activity
+        const loginActivity = new LoginActivity({ user: user.id });
+        await loginActivity.save();
 
         // Create and return JWT
         const payload = {
@@ -219,6 +224,10 @@ exports.googleLogin = async (req, res) => {
         if (user) { // If user exists, create JWT and return it
             // If user logs in with Google, update profile picture if it's different
 
+            // Log the successful login activity
+            const loginActivity = new LoginActivity({ user: user.id });
+            await loginActivity.save();
+
             const payload = {
                 user: {
                     id: user.id,
@@ -245,6 +254,11 @@ exports.googleLogin = async (req, res) => {
             isActive: true, // Google users are active by default
         });
         await user.save();
+
+        // Log the successful login activity for the new user
+        const loginActivity = new LoginActivity({ user: user.id });
+        await loginActivity.save();
+
         // Create JWT for the new user
         const payload = {
             user: {

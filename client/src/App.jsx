@@ -33,6 +33,10 @@ function App() {
           </Route>
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
             <Route path="/admin/*" element={<AdminPanel />} />
+            <Route
+              path="/admin/"
+              element={<Navigate to="/admin/admin-home" replace />}
+            />
           </Route>
           <Route path="/unauthorised" element={<Unauthorised />} />
           <Route path="/auth/*" element={<Auth />} />

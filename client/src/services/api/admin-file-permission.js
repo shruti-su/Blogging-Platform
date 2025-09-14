@@ -63,6 +63,20 @@ const AdminService = {
     }
   },
 
+  /**
+   * Fetches all users with their corresponding blog counts.
+   * @returns {Promise<Array>} A promise that resolves to an array of users with blog counts.
+   */
+  getUserBlogCounts: async () => {
+    try {
+      const response = await api.get(`${USER_BASE_PATH}user-blog-counts`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user blog counts:", error);
+      throw error;
+    }
+  },
+
 };
 
 export default AdminService;

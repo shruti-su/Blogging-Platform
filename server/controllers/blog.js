@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const Blog = require("../models/blogs");
 const Follow = require("../models/Follow");
 const mongoose = require("mongoose");
+const User = require("../models/User");
 
 exports.addBlog = async (req, res) => {
     const errors = validationResult(req);
@@ -41,6 +42,41 @@ exports.addBlog = async (req, res) => {
         console.error("❌ Error adding blog:", err);
         res.status(500).json({ error: "Internal server error" });
     }
+};
+
+exports.getUserBlogCounts = async (req, res) => {
+  try {
+    const userBlogCounts = await User.aggregate([
+      {
+        // Stage 1: Use $lookup to join with the blogs collection
+        $lookup: {
+          from: "blogs", // The name of the blogs collection in MongoDB
+          localField: "_id",
+          foreignField: "author",
+          as: "blogs",
+        },
+      },
+      {
+        // Stage 2: Reshape the documents with the required fields
+        $project: {
+          _id: 1,
+          name: 1,
+          email: 1,
+          role: 1,
+          blogCount: { $size: "$blogs" }, // Count the number of blogs
+        },
+      },
+      {
+        // Stage 3: Sort the results by name
+        $sort: { name: 1 },
+      },
+    ]);
+
+    res.status(200).json(userBlogCounts);
+  } catch (err) {
+    console.error("Error fetching user blog counts:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 exports.getAllBlogs = async (req, res) => {

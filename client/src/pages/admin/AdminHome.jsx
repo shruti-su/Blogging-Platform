@@ -1,93 +1,122 @@
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Typography,
-} from "@material-tailwind/react";
-import {
-  Chart as ChartJS,
-  LineElement,
-  PointElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
+import React, { useState, useEffect } from "react";
+import { DocumentTextIcon, UsersIcon } from "@heroicons/react/24/outline";
 import AdminService from "@/services/api/admin-file-permission";
-
-ChartJS.register(
-  LineElement,
-  PointElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale
-);
+import { Card, CardBody, Typography } from "@material-tailwind/react";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 
 function AdminHome() {
-  const [chartData, setChartData] = useState(null);
+  const [stats, setStats] = useState({ totalBlogs: 0, totalUsers: 0 });
+  const [userBlogCounts, setUserBlogCounts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    AdminService.getTodayLoginStats()
-      .then((logins) => {
-        setChartData({
-          labels: Array.from({ length: 24 }, (_, i) => `${i}:00`),
-          datasets: [
-            {
-              label: "Today's Logins (Per Hour)",
-              data: logins,
-              borderColor: "rgba(79, 70, 229, 1)", // Indigo-600
-              backgroundColor: "rgba(99, 102, 241, 0.2)",
-              tension: 0.4,
-              fill: true,
-              pointRadius: 4,
-              pointHoverRadius: 6,
-            },
-          ],
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const usersWithBlogs = await AdminService.getUserBlogCounts();
+        const totalBlogs = usersWithBlogs.reduce(
+          (sum, user) => sum + user.blogCount,
+          0
+        );
+        setStats({
+          totalBlogs,
+          totalUsers: usersWithBlogs.length,
         });
-      })
-      .catch((err) => console.error("Error loading login stats:", err));
+        setUserBlogCounts(usersWithBlogs);
+      } catch (error) {
+        console.error("Failed to fetch admin stats:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: { position: "top" },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: { stepSize: 1 },
-        title: { display: true, text: "Login Count" },
-      },
-      x: {
-        title: { display: true, text: "Hour" },
-      },
-    },
-  };
-
   return (
-    <div className="p-6 space-y-8">
-      <Typography variant="h4" className="text-indigo-700 font-bold">
-        Admin Dashboard
-      </Typography>
-
-      <Card className="shadow-lg rounded-xl">
-        <CardHeader floated={false} shadow={false} className="bg-indigo-50 px-6 py-4">
-          <Typography variant="h6" className="text-indigo-600">
-            Today's User Logins (Hourly View)
-          </Typography>
-        </CardHeader>
-        <CardBody className="px-6 py-4">
-          {chartData ? (
-            <Line data={chartData} options={chartOptions} />
-          ) : (
-            <Typography color="gray" className="text-sm">
-              Loading login statistics...
+    <div className="p-6 mt-9 space-y-8">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Total Blogs Card */}
+        <Card className="shadow-lg dark:bg-gray-800">
+          <CardBody>
+            <div className="flex items-center justify-between">
+              <Typography
+                variant="h6"
+                color="blue-gray"
+                className="dark:text-gray-300"
+              >
+                Total Blogs
+              </Typography>
+              <div className="p-2 bg-orange-500/20 rounded-lg">
+                <DocumentTextIcon className="w-6 h-6 text-orange-500" />
+              </div>
+            </div>
+            <Typography
+              variant="h2"
+              color="blue-gray"
+              className="mt-4 font-extrabold dark:text-white"
+            >
+              {loading ? "..." : stats.totalBlogs}
             </Typography>
-          )}
+          </CardBody>
+        </Card>
+
+        {/* Total Users Card */}
+        <Card className="shadow-lg dark:bg-gray-800">
+          <CardBody>
+            <div className="flex items-center justify-between">
+              <Typography
+                variant="h6"
+                color="blue-gray"
+                className="dark:text-gray-300"
+              >
+                Total Users
+              </Typography>
+              <div className="p-2 bg-blue-500/20 rounded-lg">
+                <UsersIcon className="w-6 h-6 text-blue-500" />
+              </div>
+            </div>
+            <Typography
+              variant="h2"
+              color="blue-gray"
+              className="mt-4 font-extrabold dark:text-white"
+            >
+              {loading ? "..." : stats.totalUsers}
+            </Typography>
+          </CardBody>
+        </Card>
+      </div>
+
+      {/* User Blog Counts Table */}
+      <Card className="shadow-lg dark:bg-gray-800">
+        <CardBody>
+          <Typography
+            variant="h5"
+            color="blue-gray"
+            className="mb-4 dark:text-white"
+          >
+            User Contributions
+          </Typography>
+          <DataTable
+            value={userBlogCounts}
+            loading={loading}
+            paginator
+            rows={10}
+            emptyMessage="No users found."
+          >
+            <Column field="name" header="User Name" sortable />
+            <Column field="email" header="Email" sortable />
+            <Column field="role" header="Role" sortable />
+            <Column
+              field="blogCount"
+              header="Blogs Posted"
+              sortable
+              body={(rowData) => (
+                <div className="text-center">{rowData.blogCount}</div>
+              )}
+            />
+          </DataTable>
         </CardBody>
       </Card>
     </div>

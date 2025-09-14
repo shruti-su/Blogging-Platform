@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { Typography, Card, CardBody, Button } from "@material-tailwind/react";
 import {
   UserCircleIcon,
@@ -22,6 +22,7 @@ export function UserProfilePage() {
   const { userId } = useParams();
   const { user: authUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [profile, setProfile] = useState(null);
   const [blogs, setBlogs] = useState([]);
@@ -40,10 +41,13 @@ export function UserProfilePage() {
   useEffect(() => {
     if (!userId || !authUser) return;
 
-    // Redirect if viewing own profile
+    // Redirect a regular user if they are viewing their own public profile.
+    // Let admins view their own public profile page as-is.
     if (userId === authUser.id) {
-      navigate("/dashboard/profile");
-      return;
+      if (authUser.role === "user") {
+        navigate("/dashboard/profile");
+        return;
+      }
     }
 
     const fetchData = async () => {
@@ -71,20 +75,22 @@ export function UserProfilePage() {
         });
 
         const authFollowingIds = new Set(
-          (authFollowingRes || []).map((u) => u._id)
+          (authFollowingRes || [])
+            .filter((user) => user) // Safely filter out any null/undefined entries
+            .map((u) => u._id)
         );
         setIsFollowing(authFollowingIds.has(userId));
       } catch (err) {
         console.error("❌ Error fetching user profile data:", err);
         showError("Failed to load user profile. Please try again.");
-        navigate("/dashboard/all-users"); // Redirect if user not found
+        // Redirect to the appropriate user list based on the current layout.
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [userId, authUser, navigate]);
+  }, [userId, authUser, navigate, location.pathname]);
 
   const handleFollow = async () => {
     try {
@@ -248,7 +254,7 @@ export function UserProfilePage() {
                         📷
                       </div>
                     )}
-                    <Link to={`/dashboard/blog-viewer/${blog._id}`}>
+                    <Link to={`/auth/blog-viewer/${blog._id}`}>
                       <span className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400">
                         {blog.blogTitle}
                       </span>

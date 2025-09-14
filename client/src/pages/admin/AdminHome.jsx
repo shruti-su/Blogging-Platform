@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DocumentTextIcon, UsersIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 import AdminService from "@/services/api/admin-file-permission";
 import { Card, CardBody, Typography } from "@material-tailwind/react";
 import { DataTable } from "primereact/datatable";
@@ -33,6 +34,17 @@ function AdminHome() {
 
     fetchData();
   }, []);
+
+  const nameBodyTemplate = (rowData) => {
+    return (
+      <Link
+        to={`/admin/user/${rowData._id}`}
+        className="text-blue-600 hover:underline dark:text-blue-400 font-semibold"
+      >
+        {rowData.name}
+      </Link>
+    );
+  };
 
   return (
     <div className="p-6 mt-9 space-y-8">
@@ -105,7 +117,12 @@ function AdminHome() {
             rows={10}
             emptyMessage="No users found."
           >
-            <Column field="name" header="User Name" sortable />
+            <Column
+              field="name"
+              header="User Name"
+              sortable
+              body={nameBodyTemplate}
+            />
             <Column field="email" header="Email" sortable />
             <Column field="role" header="Role" sortable />
             <Column

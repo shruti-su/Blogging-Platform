@@ -165,6 +165,13 @@ export const routes = [
         element: <UserManagement />,
         sidebar: true,
       },
+      {
+        icon: <UserCircleIcon {...icon} />,
+        name: "user-profile",
+        path: "/user/:userId",
+        element: <UserProfilePage />,
+        sidebar: false,
+      },
     ],
   },
   {
@@ -200,6 +207,13 @@ export const routes = [
         name: "forgot password",
         path: "/forgot-password",
         element: <Forgotpassword />,
+      },
+      {
+        icon: <UserCircleIcon {...icon} />,
+        name: "blog-viewer",
+        path: "/blog-viewer/:id",
+        element: <BlogView />,
+        sidebar: false,
       },
     ],
   },

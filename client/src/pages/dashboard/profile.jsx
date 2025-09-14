@@ -22,7 +22,7 @@ import followService from "@/services/api/followService";
 import AuthService from "@/services/api/auth";
 import { sweetAlert } from "@/components/SweetAlert/SweetAlert";
 
-const ProfilePageSkeleton = () => (
+export const ProfilePageSkeleton = () => (
   <div className="p-4 sm:p-6 mt-9 space-y-8 animate-pulse">
     {/* Profile Header Skeleton */}
     <div className="shadow-lg dark:bg-gray-800 rounded-xl p-6">

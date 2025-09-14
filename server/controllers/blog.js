@@ -245,6 +245,38 @@ exports.getUserBlogs = async (req, res) => {
     }
 }
 
+exports.getBlogsByUserId = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: "Invalid user ID." });
+        }
+
+        const blogsFromDB = await Blog.find({ author: userId, isActive: true })
+            .populate('author', 'name profilePicture')
+            .select('-blogContent') // Exclude content for list view
+            .sort({ createdAt: -1 });
+
+        // Convert image buffers to base64 for the client
+        const blogs = blogsFromDB.map(blog => {
+            const blogObject = blog.toObject();
+            if (blogObject.attachedImages && blogObject.attachedImages.length > 0) {
+                blogObject.attachedImages = blogObject.attachedImages.map(img => {
+                    if (img.data instanceof Buffer) {
+                        return { ...img, data: img.data.toString('base64') };
+                    }
+                    return img;
+                });
+            }
+            return blogObject;
+        });
+        res.status(200).json({ blogs });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
 exports.getFeedBlogs = async (req, res) => {
     try {
         // 1. Pagination parameters from query string

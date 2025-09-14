@@ -20,6 +20,7 @@ import UserManagement from "./pages/admin/user-management"; // Adjust the path a
 import BlogView from "@/pages/dashboard/blog/blog-view";
 import BlogEditPage from "@/pages/dashboard/blog/blog-edit";
 import AllUsersPage from "@/pages/dashboard/all-users";
+import { UserProfilePage } from "@/pages/dashboard/user-profile";
 
 const icon = {
   className: "w-6 h-6 text-inherit",
@@ -137,6 +138,13 @@ export const routes = [
         path: "/profile",
         element: <ProfilePage />,
         sidebar: true,
+      },
+      {
+        icon: <UserCircleIcon {...icon} />,
+        name: "user-profile",
+        path: "/user/:userId",
+        element: <UserProfilePage />,
+        sidebar: false,
       },
     ],
   },

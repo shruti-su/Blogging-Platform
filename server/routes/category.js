@@ -2,15 +2,14 @@ const express = require("express");
 const router = express.Router();
 const categoryController = require("../controllers/category");
 const { check } = require("express-validator");
-
-// const auth = require("../middleware/authMiddleware");
+const auth = require("../middleware/authMiddleware");
 
 // @route   POST /categories/add
 // @desc    Add a new blog category
 // @access  Private (requires auth)
 router.post(
     "/add",
-    // auth,
+    auth,
     [
         check("name", "Category name is required").not().isEmpty(),
     ],
@@ -22,8 +21,28 @@ router.post(
 // @access  Public/Private
 router.get(
     "/get",
-    // auth,
     categoryController.getCategories
+);
+
+// @route   PUT /categories/:id
+// @desc    Update a category
+// @access  Private
+router.put(
+    "/:id",
+    auth,
+    [
+        check("name", "Category name is required").not().isEmpty(),
+    ],
+    categoryController.updateCategory
+);
+
+// @route   DELETE /categories/:id
+// @desc    Delete a category
+// @access  Private
+router.delete(
+    "/:id",
+    auth,
+    categoryController.deleteCategory
 );
 
 module.exports = router;

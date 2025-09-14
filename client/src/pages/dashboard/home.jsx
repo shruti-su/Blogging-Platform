@@ -37,9 +37,12 @@ const BlogCard = ({ blog, onVoteUpdate }) => {
           <div className="flex items-center gap-3 mb-4">
             <UserCircleIcon className="h-10 w-10 text-gray-400" />
             <div>
-              <p className="font-semibold text-gray-800 dark:text-gray-200">
-                {blog.author.name}
-              </p>
+              <Link to={`/dashboard/user/${blog.author._id}`}>
+                <p className="font-semibold text-gray-800 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400 transition-colors">
+                  {blog.author.name}
+                </p>
+              </Link>
+
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 {new Date(blog.createdAt).toLocaleDateString("en-US", {
                   year: "numeric",

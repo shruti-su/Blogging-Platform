@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 
 // API service
 import CategoryService from "@/services/api/category";
+import { sweetAlert } from "../../../components/SweetAlert/SweetAlert";
 
 // Heroicons
 import {
@@ -23,6 +24,8 @@ function CategoryList() {
   const [newCategory, setNewCategory] = useState("");
   const [editId, setEditId] = useState(null);
 
+  const { showSuccess, showError, showConfirm } = sweetAlert();
+
   // ✅ Load categories from API on mount
   useEffect(() => {
     const fetchCategories = async () => {
@@ -32,6 +35,7 @@ function CategoryList() {
         setCategories(data.categories || []);
       } catch (error) {
         console.error("Failed to load categories", error);
+        showError("Failed to load categories.");
       }
     };
 
@@ -74,23 +78,26 @@ function CategoryList() {
 
     try {
       if (editId) {
-        // Local update (since update API not in service yet)
+        // Update existing category via API
+        const updatedCat = await CategoryService.updateCategory(editId, {
+          name: newCategory.trim(),
+        });
         setCategories(
           categories.map((cat) =>
-            cat._id === editId ? { ...cat, name: newCategory.trim() } : cat
+            cat._id === editId ? updatedCat.category : cat
           )
         );
+        showSuccess("Category updated successfully!");
       } else {
         // Add new category via API
         const newCat = { name: newCategory.trim() };
         const savedCategory = await CategoryService.addCategory(newCat);
-
-        // The API returns { message: '...', category: {...} }
-        // We only need to add the category object to our state.
         setCategories([...categories, savedCategory.category]);
+        showSuccess("Category added successfully!");
       }
     } catch (error) {
       console.error("Error saving category:", error);
+      showError(error.response?.data?.msg || "Failed to save category.");
     }
 
     setNewCategory("");
@@ -98,14 +105,19 @@ function CategoryList() {
     setVisible(false);
   };
 
-  // ✅ Delete category (local until delete API is ready)
   const handleDelete = async (id) => {
+    const confirmed = await showConfirm(
+      "Are you sure you want to delete this category?"
+    );
+    if (!confirmed) return;
+
     try {
-      // If you add delete API later:
-      // await CategoryService.deleteCategory(id);
+      await CategoryService.deleteCategory(id);
       setCategories(categories.filter((cat) => cat._id !== id));
+      showSuccess("Category deleted successfully.");
     } catch (error) {
       console.error("Error deleting category:", error);
+      showError(error.response?.data?.msg || "Failed to delete category.");
     }
   };
 

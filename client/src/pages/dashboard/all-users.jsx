@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
+import { Link } from "react-router-dom";
 import { UserPlusIcon, UserMinusIcon } from "@heroicons/react/24/solid";
 
 import userService from "@/services/api/userService";
@@ -139,13 +140,15 @@ export default function AllUsersPage() {
                   </div>
                 )}
                 <div>
-                  <Typography
-                    variant="h6"
-                    color="blue-gray"
-                    className="dark:text-white "
-                  >
-                    {user.name}
-                  </Typography>
+                  <Link to={`/dashboard/user/${user._id}`}>
+                    <Typography
+                      variant="h6"
+                      color="blue-gray"
+                      className="dark:text-white hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+                    >
+                      {user.name}
+                    </Typography>
+                  </Link>
                   <Typography
                     color="gray"
                     className="text-sm font-normal dark:text-gray-400 "

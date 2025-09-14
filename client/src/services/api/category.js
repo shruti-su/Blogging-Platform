@@ -1,30 +1,49 @@
-// src/api/userService.js
-import api from './../axiosConfig'; // Import your configured Axios instance
+// src/services/api/category.js
+import api from './../axiosConfig';
 
 // Base path for user-related endpoints
-const USER_BASE_PATH = 'categories/';
-
+const CATEGORY_BASE_PATH = 'categories/';
 
 const CategoryService = {
     getAllCategories: async () => {
         try {
-            const response = await api.get(`${USER_BASE_PATH}get`); // Adjust the endpoint as needed
-            return response.data; // Axios puts the actual data in .data
+            const response = await api.get(`${CATEGORY_BASE_PATH}get`);
+            return response.data;
         } catch (error) {
-            console.error('Error fetching all categories:', error);
-            throw error; // Re-throw the error to be handled by the calling component
+            console.error('API Error: Could not fetch all categories.', error);
+            throw error;
         }
     },
-        addCategory: async (categoryData) => {      
+    addCategory: async (categoryData) => {
         try {
-            const response = await api.post(`${USER_BASE_PATH}add`, categoryData); // Adjust the endpoint as needed
-            return response.data; // Axios puts the actual data in .data
+            const response = await api.post(`${CATEGORY_BASE_PATH}add`, categoryData);
+            return response.data;
         } catch (error) {
-            console.error('Error adding category:', error);
-            throw error; // Re-throw the error to be handled by the calling component
+            console.error('API Error: Could not add category.', error);
+            throw error;
         }
     },
-    
+    updateCategory: async (categoryId, categoryData) => {
+        try {
+            // Assuming a PUT endpoint like /api/categories/:id
+            const response = await api.put(`${CATEGORY_BASE_PATH}${categoryId}`, categoryData);
+            return response.data;
+        } catch (error) {
+            console.error(`API Error: Could not update category with ID ${categoryId}.`, error);
+            throw error;
+        }
+    },
+    deleteCategory: async (categoryId) => {
+        try {
+            // Assuming a DELETE endpoint like /api/categories/:id
+            const response = await api.delete(`${CATEGORY_BASE_PATH}${categoryId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`API Error: Could not delete category with ID ${categoryId}.`, error);
+            throw error;
+        }
+    }
+
 };
 
-export default CategoryService ;
+export default CategoryService;

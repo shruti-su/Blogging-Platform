@@ -47,6 +47,13 @@ router.get(
     auth,
     blogController.getUserBlogs
 );
+// @route   GET /blogs/user/:userId
+// @desc    Get all blogs for a specific user
+// @access  Public
+router.get(
+    "/user/:userId",
+    blogController.getBlogsByUserId
+);
 // @route   GET /blogs/get/:id
 // @desc    Get a single blog by ID
 // @access  Public

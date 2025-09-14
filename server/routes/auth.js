@@ -52,6 +52,11 @@ router.put(
 // @access  Private
 router.get('/me', auth, authcontroller.getCurrentUser);
 
+// @route   GET /api/auth/user/:id
+// @desc    Get user by ID
+// @access  Public
+router.get('/user/:id', authcontroller.getUserById);
+
 // router.post("/forgot-password", authcontroller.forgotPassword);
 router.post("/reset-password", authcontroller.resetPassword);
 

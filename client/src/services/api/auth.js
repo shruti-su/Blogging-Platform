@@ -89,6 +89,15 @@ const AuthService = {
             throw error;
         }
     },
+    getUserById: async (userId) => {
+        try {
+            const response = await api.get(`${USER_BASE_PATH}user/${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching user by ID ${userId}:`, error);
+            throw error;
+        }
+    },
     /**
      * Fetches all users.
      * @returns {Promise<Array>} A promise that resolves to an array of user objects.

@@ -270,11 +270,7 @@ export function ProfilePage() {
             <div className="relative flex-shrink-0 mb-4 md:mb-0">
               {profile?.profilePicture ? (
                 <img
-                  src={
-                    profile.profilePicture.startsWith("http")
-                      ? getHighResGooglePhoto(profile.profilePicture)
-                      : profile.profilePicture
-                  }
+                  src={profile.profilePicture}
                   alt={profile?.name || "Profile"}
                   className="h-[110px] w-[110px] rounded-full object-cover"
                 />

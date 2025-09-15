@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const Category = require("../models/category");
+const Blog = require("../models/blogs");
 
 // Controller to add a new category
 exports.addCategory = async (req, res) => {
@@ -80,20 +81,67 @@ exports.updateCategory = async (req, res) => {
     }
 };
 
-// Controller to "delete" a category (soft delete)
+// Controller to delete a category and handle its associated blogs
 exports.deleteCategory = async (req, res) => {
-    try {
-        const category = await Category.findByIdAndUpdate(
-            req.params.id,
-            { $set: { isActive: false } },
-            { new: true }
-        );
+    const { id } = req.params;
+    const { action, transferToId } = req.body; // action: 'delete' or 'transfer'
 
-        if (!category) {
+    try {
+        const categoryToDelete = await Category.findById(id);
+        if (!categoryToDelete) {
             return res.status(404).json({ msg: 'Category not found.' });
         }
 
-        res.status(200).json({ message: 'Category deleted successfully.' });
+        const categoryName = categoryToDelete.name;
+        const blogCount = await Blog.countDocuments({ blogType: categoryName });
+        let transferToCategory = null; // For use in success message
+
+        // If there are blogs in the category, an action is required.
+        if (blogCount > 0) {
+            if (action === 'delete') {
+                // Option 2: Delete all blogs associated with this category
+                await Blog.deleteMany({ blogType: categoryName });
+            } else if (action === 'transfer') {
+                // Option 1: Transfer all blogs to a new category
+                if (!transferToId) {
+                    return res.status(400).json({ msg: 'A target category ID must be provided for transfer.' });
+                }
+                if (transferToId === id) {
+                    return res.status(400).json({ msg: 'Cannot transfer blogs to the category being deleted.' });
+                }
+
+                transferToCategory = await Category.findById(transferToId);
+                if (!transferToCategory) {
+                    return res.status(404).json({ msg: 'Target category for transfer not found.' });
+                }
+
+                // Update blogs to point to the new category name
+                await Blog.updateMany(
+                    { blogType: categoryName },
+                    { $set: { blogType: transferToCategory.name } }
+                );
+            } else {
+                // If blogs exist but no action is specified, inform the client.
+                return res.status(400).json({
+                    error: `This category has ${blogCount} associated blogs. You must specify an action.`,
+                    requiresAction: true,
+                    blogCount,
+                });
+            }
+        }
+
+        // After handling associated blogs, permanently delete the category
+        await categoryToDelete.deleteOne();
+
+        let message = `Category '${categoryName}' was deleted successfully.`;
+        if (blogCount > 0 && action === 'delete') {
+            message = `Category '${categoryName}' and its ${blogCount} associated blogs were deleted.`;
+        } else if (blogCount > 0 && action === 'transfer') {
+            message = `${blogCount} blogs were transferred to '${transferToCategory.name}' and category '${categoryName}' was deleted.`;
+        }
+
+        res.status(200).json({ message });
+
     } catch (err) {
         console.error('❌ Error deleting category:', err);
         res.status(500).json({ error: 'Internal server error' });

@@ -4,7 +4,7 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
 import { MaterialTailwindControllerProvider } from "@/components/context";
-
+import { ptConfig } from "./primereact-config";
 import { PrimeReactProvider, PrimeReactContext } from "primereact/api";
 import { ThemeProvider as CustomThemeProvider } from "@/components/context/ThemeContext"; // Renamed to avoid conflict
 
@@ -64,7 +64,7 @@ import "./index.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <CustomThemeProvider>
-      <PrimeReactProvider>
+      <PrimeReactProvider value={{ pt: ptConfig }}>
         <BrowserRouter>
           <ThemeProvider>
             <MaterialTailwindControllerProvider>

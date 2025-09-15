@@ -33,10 +33,11 @@ const CategoryService = {
             throw error;
         }
     },
-    deleteCategory: async (categoryId) => {
+    deleteCategory: async (categoryId, body) => {
         try {
-            // Assuming a DELETE endpoint like /api/categories/:id
-            const response = await api.delete(`${CATEGORY_BASE_PATH}${categoryId}`);
+            // A DELETE request can have a body, which is passed in the config object.
+            // The body is used to specify the action ('delete' or 'transfer').
+            const response = await api.delete(`${CATEGORY_BASE_PATH}${categoryId}`, { data: body });
             return response.data;
         } catch (error) {
             console.error(`API Error: Could not delete category with ID ${categoryId}.`, error);

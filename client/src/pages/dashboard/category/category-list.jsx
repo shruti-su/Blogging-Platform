@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
+import { RadioButton } from "primereact/radiobutton";
 
 // API service
 import CategoryService from "@/services/api/category";
@@ -23,24 +24,31 @@ function CategoryList() {
   const [visible, setVisible] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [editId, setEditId] = useState(null);
+  // State for the delete confirmation dialog
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null); // { id, name, blogCount }
+  const [deleteAction, setDeleteAction] = useState("delete"); // 'delete' or 'transfer'
+  const [transferToId, setTransferToId] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { showSuccess, showError, showConfirm } = sweetAlert();
 
+  const fetchCategories = async () => {
+    try {
+      const data = await CategoryService.getAllCategories();
+      // The API returns an object { categories: [...] }, so we need to access the array.
+      setCategories(data.categories || []);
+    } catch (error) {
+      console.error("Failed to load categories", error);
+      showError("Failed to load categories.");
+    }
+  };
+
   // ✅ Load categories from API on mount
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await CategoryService.getAllCategories();
-        // The API returns an object { categories: [...] }, so we need to access the array.
-        setCategories(data.categories || []);
-      } catch (error) {
-        console.error("Failed to load categories", error);
-        showError("Failed to load categories.");
-      }
-    };
-
     fetchCategories();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // showError is stable, no need to include
 
   const handleMenuToggle = (event, categoryId) => {
     if (openMenu === categoryId) {
@@ -106,18 +114,68 @@ function CategoryList() {
   };
 
   const handleDelete = async (id) => {
-    const confirmed = await showConfirm(
-      "Are you sure you want to delete this category?"
-    );
-    if (!confirmed) return;
+    const category = categories.find((c) => c._id === id);
+    if (!category) return;
 
     try {
-      await CategoryService.deleteCategory(id);
+      // First attempt: delete without any action. This will succeed if there are no blogs.
+      const response = await CategoryService.deleteCategory(id);
       setCategories(categories.filter((cat) => cat._id !== id));
-      showSuccess("Category deleted successfully.");
+      showSuccess(response.message || "Category deleted successfully.");
     } catch (error) {
-      console.error("Error deleting category:", error);
-      showError(error.response?.data?.msg || "Failed to delete category.");
+      // Check if the error is the one that requires user action
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data.requiresAction
+      ) {
+        const { blogCount } = error.response.data;
+        setCategoryToDelete({ id, name: category.name, blogCount });
+        setDeleteAction("delete"); // Reset to default
+        setTransferToId(""); // Reset transfer ID
+        setDeleteDialogVisible(true);
+      } else {
+        // Handle other errors (e.g., 500 server error, category not found)
+        console.error("Error deleting category:", error);
+        showError(error.response?.data?.msg || "Failed to delete category.");
+      }
+    }
+  };
+
+  const handleConfirmDeleteAction = async () => {
+    if (!categoryToDelete) return;
+
+    setIsDeleting(true);
+
+    const body = {
+      action: deleteAction,
+    };
+
+    if (deleteAction === "transfer") {
+      if (!transferToId) {
+        showError("Please select a category to transfer blogs to.");
+        setIsDeleting(false);
+        return;
+      }
+      body.transferToId = transferToId;
+    }
+
+    try {
+      const response = await CategoryService.deleteCategory(
+        categoryToDelete.id,
+        body
+      );
+      showSuccess(response.message);
+      setDeleteDialogVisible(false);
+      setCategoryToDelete(null);
+      fetchCategories(); // Refetch categories to get the updated list
+    } catch (error) {
+      console.error("Error confirming delete action:", error);
+      showError(
+        error.response?.data?.msg || "An error occurred during the operation."
+      );
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -239,14 +297,13 @@ function CategoryList() {
           </div>
         }
         visible={visible}
-        style={{ width: "28rem" }}
-        modal
+        // modal
         onHide={() => {
           setVisible(false);
           setEditId(null);
           setNewCategory("");
         }}
-        className="bg-white rounded-lg shadow-lg dark:bg-gray-900"
+        className="w-[28rem] min-w-[28rem] bg-white shadow-lg rounded-lg dark:bg-gray-800"
         footer={
           <div className="flex justify-end gap-3">
             <Button
@@ -277,6 +334,102 @@ function CategoryList() {
             className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-lg dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600 "
           />
         </div>
+      </Dialog>
+
+      {/* Delete with Options Dialog */}
+      <Dialog
+        header="Delete Category Options"
+        visible={deleteDialogVisible}
+        onHide={() => setDeleteDialogVisible(false)}
+        className="w-[32rem] min-w-[32rem] bg-white shadow-lg rounded-lg dark:bg-gray-800"
+        footer={
+          <div className="flex justify-end gap-3">
+            <Button
+              label="Cancel"
+              className="p-button-text"
+              onClick={() => setDeleteDialogVisible(false)}
+            />
+            <Button
+              label="Confirm Deletion"
+              className="p-button-danger"
+              onClick={handleConfirmDeleteAction}
+              loading={isDeleting}
+            />
+          </div>
+        }
+      >
+        {categoryToDelete && (
+          <div className="flex flex-col gap-4 p-4">
+            <p className="text-gray-700 dark:text-gray-300">
+              The category "<strong>{categoryToDelete.name}</strong>" is
+              associated with <strong>{categoryToDelete.blogCount}</strong>{" "}
+              blog(s).
+              <br />
+              Please choose an option below before deleting.
+            </p>
+
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <RadioButton
+                  inputId="deleteBlogs"
+                  name="deleteAction"
+                  value="delete"
+                  onChange={(e) => setDeleteAction(e.value)}
+                  checked={deleteAction === "delete"}
+                />
+                <label
+                  htmlFor="deleteBlogs"
+                  className="ml-2 text-gray-800 dark:text-gray-200"
+                >
+                  Delete all associated blogs.
+                </label>
+              </div>
+              <div className="flex items-center">
+                <RadioButton
+                  inputId="transferBlogs"
+                  name="deleteAction"
+                  value="transfer"
+                  onChange={(e) => setDeleteAction(e.value)}
+                  checked={deleteAction === "transfer"}
+                />
+                <label
+                  htmlFor="transferBlogs"
+                  className="ml-2 text-gray-800 dark:text-gray-200"
+                >
+                  Transfer all blogs to another category.
+                </label>
+              </div>
+            </div>
+
+            {deleteAction === "transfer" && (
+              <div className="pl-8 mt-2">
+                <label
+                  htmlFor="transferCategory"
+                  className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Transfer to:
+                </label>
+                <select
+                  id="transferCategory"
+                  value={transferToId}
+                  onChange={(e) => setTransferToId(e.target.value)}
+                  className="w-full px-3 py-2 text-gray-900 border border-gray-300 rounded-lg dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                >
+                  <option value="" disabled>
+                    Select a category
+                  </option>
+                  {categories
+                    .filter((c) => c._id !== categoryToDelete.id)
+                    .map((cat) => (
+                      <option key={cat._id} value={cat._id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
+          </div>
+        )}
       </Dialog>
     </div>
   );

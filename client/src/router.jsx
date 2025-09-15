@@ -91,34 +91,6 @@ export const routes = [
         sidebar: false,
       },
       {
-        icon: (
-          <>
-            <svg
-              className="w-6 h-6"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g fill="none">
-                <circle cx="5" cy="6" fill="currentColor" r="1.5" />
-                <circle cx="5" cy="10" fill="currentColor" r="1.5" />
-                <circle cx="5" cy="14" fill="currentColor" r="1.5" />
-                <path
-                  d="M8.5 6h7m-7 4h7m-7 4h7"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeWidth="2"
-                />
-              </g>
-            </svg>
-          </>
-        ),
-        name: "Category List",
-        path: "/category-list",
-        element: <CategoryList />,
-        sidebar: true,
-      },
-
-      {
         icon: <TableCellsIcon {...icon} />,
         name: "Choose Blog Type",
         path: "/choose-blogtype",
@@ -163,6 +135,33 @@ export const routes = [
         name: "User Management",
         path: "/user-management",
         element: <UserManagement />,
+        sidebar: true,
+      },
+      {
+        icon: (
+          <>
+            <svg
+              className="w-6 h-6"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g fill="none">
+                <circle cx="5" cy="6" fill="currentColor" r="1.5" />
+                <circle cx="5" cy="10" fill="currentColor" r="1.5" />
+                <circle cx="5" cy="14" fill="currentColor" r="1.5" />
+                <path
+                  d="M8.5 6h7m-7 4h7m-7 4h7"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="2"
+                />
+              </g>
+            </svg>
+          </>
+        ),
+        name: "Category List",
+        path: "/category-list",
+        element: <CategoryList />,
         sidebar: true,
       },
       {

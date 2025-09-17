@@ -20,7 +20,7 @@ function AdminHome() {
   });
   const [userBlogCounts, setUserBlogCounts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [dialogVisible, setDialogVisible] = useState(false);
+  const [expandedCard, setExpandedCard] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,9 +59,8 @@ function AdminHome() {
     </Link>
   );
 
-  const openDialog = (e) => {
-    e.preventDefault();
-    setDialogVisible(true);
+  const toggleCard = (cardName) => {
+    setExpandedCard(expandedCard === cardName ? null : cardName);
   };
 
   return (
@@ -84,9 +83,9 @@ function AdminHome() {
             </Typography>
             <Typography
               as="a"
-              href="#"
-              onClick={openDialog}
-              className="text-base font-medium text-purple-100 hover:text-white underline mt-2 cursor-pointer"
+              href="#user-contributions-table"
+              onClick={() => toggleCard("totalBlogs")}
+              className="text-base font-medium text-purple-100 hover:text-white underline mt-2 cursor-pointer focus:outline-none"
             >
               Click here for details
             </Typography>
@@ -109,9 +108,9 @@ function AdminHome() {
             </Typography>
             <Typography
               as="a"
-              href="#"
-              onClick={openDialog}
-              className="text-base font-medium text-purple-100 hover:text-white underline mt-2 cursor-pointer"
+              href="#user-contributions-table"
+              onClick={() => toggleCard("totalUsers")}
+              className="text-base font-medium text-purple-100 hover:text-white underline mt-2 cursor-pointer focus:outline-none"
             >
               Click here for details
             </Typography>
@@ -143,44 +142,48 @@ function AdminHome() {
           </CardBody>
         </Card>
       </div>
+      {/* Data Table */}
+      {(expandedCard === "totalBlogs" || expandedCard === "totalUsers") && (
+        <div id="user-contributions-table" className="mt-8">
+          {/* Section Header */}
+          <div className="flex items-center gap-2 mb-4">
+            <Typography
+              variant="h4"
+              className="text-gray-800 dark:text-white font-bold"
+            >
+              📊 User Contributions
+            </Typography>
+          </div>
 
-      {/* Dialog with DataTable */}
-      <Dialog
-        header="📊 User Contributions"
-        visible={dialogVisible}
-        style={{ width: "75vw", maxWidth: "900px" }}
-        onHide={() => setDialogVisible(false)}
-        modal
-        className="dark:bg-gray-900 rounded-xl"
-      >
-        <DataTable
-          value={userBlogCounts}
-          loading={loading}
-          paginator
-          rows={10}
-          emptyMessage="No users found."
-          className="p-datatable-sm"
-        >
-          <Column
-            field="name"
-            header="User Name"
-            sortable
-            body={nameBodyTemplate}
-          />
-          <Column field="email" header="Email" sortable />
-          <Column field="role" header="Role" sortable />
-          <Column
-            field="blogCount"
-            header="Blogs Posted"
-            sortable
-            body={(rowData) => (
-              <div className="text-center font-semibold text-purple-600 dark:text-purple-400">
-                {rowData.blogCount}
-              </div>
-            )}
-          />
-        </DataTable>
-      </Dialog>
+          {/* Styled Table Card */}
+          <div>
+            <DataTable
+              value={userBlogCounts}
+              loading={loading}
+              paginator
+              rows={5}
+              rowsPerPageOptions={[5, 10, 25]}
+              emptyMessage="No users found."
+              rowHover
+            >
+              <Column
+                field="name"
+                header="User Name"
+                sortable
+                body={nameBodyTemplate}
+              />
+              <Column field="email" header="Email" sortable />
+              <Column field="role" header="Role" sortable />
+              <Column
+                field="blogCount"
+                header="Blogs Posted"
+                sortable
+                body={(rowData) => <div>{rowData.blogCount}</div>}
+              />
+            </DataTable>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

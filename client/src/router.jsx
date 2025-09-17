@@ -6,12 +6,14 @@ import {
   ServerStackIcon,
   RectangleStackIcon,
   UsersIcon,
+  FlagIcon,
 } from "@heroicons/react/24/solid";
 import Home from "/src/pages/dashboard/home";
 import { ProfilePage } from "/src/pages/dashboard/profile";
 import { SignIn, SignUp, Forgotpassword } from "/src/pages/auth";
 import UploadBlog from "/src/pages/dashboard/blog/upload-blog";
 import CreateBlog from "/src/pages/dashboard/blog/create-blog";
+import ReportManagement from "/src/pages/admin/ReportManagement";
 import ChooseBlogType from "/src/pages/dashboard/choose-blogtype";
 import CategoryList from "/src/pages/dashboard/category/category-list";
 import Unauthorised from "/src/pages/unauthorised/unauthorised";
@@ -139,6 +141,13 @@ export const routes = [
         sidebar: true,
       },
       {
+        icon: <FlagIcon {...icon} />,
+        name: "Blog Reports",
+        path: "/report-management",
+        element: <ReportManagement />,
+        sidebar: true,
+      },
+      {
         icon: (
           <>
             <svg
@@ -170,6 +179,13 @@ export const routes = [
         name: "user-profile",
         path: "/user/:userId",
         element: <UserProfilePage />,
+        sidebar: false,
+      },
+      {
+        icon: <UserCircleIcon {...icon} />,
+        name: "blog-viewer",
+        path: "/blog-viewer/:id",
+        element: <BlogView />,
         sidebar: false,
       },
     ],
@@ -208,16 +224,10 @@ export const routes = [
         path: "/forgot-password",
         element: <Forgotpassword />,
       },
+
       {
         icon: <UserCircleIcon {...icon} />,
-        name: "blog-viewer",
-        path: "/blog-viewer/:id",
-        element: <BlogView />,
-        sidebar: false,
-      },
-      {
-        icon: <UserCircleIcon {...icon} />,
-        name: "blog-viewer",
+        name: "blog-suspended",
         path: "/suspended",
         element: <SuspendedPage />,
         sidebar: false,

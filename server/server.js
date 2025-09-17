@@ -61,6 +61,7 @@ app.use('/categories', require('./routes/category')); // Use the category routes
 app.use('/votes', require('./routes/vote')); // Use the vote routes
 app.use('/comments', require('./routes/comment')); // Use the comment routes
 app.use('/users', require('./routes/followRoutes'));
+app.use('/api/reports', require('./routes/report'));
 app.use('/admin', require('./routes/adminRoutes'));
 
 

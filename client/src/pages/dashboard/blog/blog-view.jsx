@@ -1,19 +1,27 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   CalendarIcon,
   ShareIcon,
   HandThumbUpIcon,
   HandThumbDownIcon,
   UserCircleIcon,
+  TrashIcon,
+  PencilIcon,
+  EllipsisVerticalIcon,
 } from "@heroicons/react/24/solid";
 
 import BlogService from "@/services/api/blog";
 import VoteService from "@/services/api/vote";
 import CommentService from "@/services/api/comment";
+import { useAuth } from "@/components/auth/AuthContext";
+import { sweetAlert } from "@/components/SweetAlert/SweetAlert";
 
 export default function BlogView() {
   const { id } = useParams(); // Get the 'id' from the URL parameter
+  const navigate = useNavigate();
+  const { user, userRole } = useAuth();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,6 +33,13 @@ export default function BlogView() {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showSuccess, showError, showConfirm } = sweetAlert();
+  const [openMenu, setOpenMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState(null);
+  const menuRef = useRef(null);
+
+  const isAdmin = userRole() === "admin";
+  const isAuthor = user && blog && blog.author && user.id === blog.author._id;
 
   useEffect(() => {
     const fetchBlogData = async () => {
@@ -55,6 +70,20 @@ export default function BlogView() {
 
     fetchBlogData();
   }, [id]); // Re-run the effect if the id from the URL changes
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenu(false);
+      }
+    };
+    if (openMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openMenu]);
 
   const handleShare = () => {
     setIsShareModalOpen(true);
@@ -99,6 +128,39 @@ export default function BlogView() {
       console.error("Error posting comment:", err);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleMenuToggle = (event) => {
+    if (openMenu) {
+      setOpenMenu(false);
+    } else {
+      const rect = event.currentTarget.getBoundingClientRect();
+      setMenuPosition({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.right + window.scrollX - 144, // w-36
+      });
+      setOpenMenu(true);
+    }
+  };
+
+  const handleEdit = () => {
+    navigate(`/dashboard/edit-blog/${id}`);
+  };
+
+  const handleDeleteBlog = async () => {
+    const isConfirmed = await showConfirm(
+      "Are you sure you want to delete this blog? This action cannot be undone."
+    );
+    if (isConfirmed) {
+      try {
+        await BlogService.deleteBlog(id);
+        showSuccess("Blog deleted successfully.");
+        navigate("/admin/report-management"); // Redirect admin after deletion
+      } catch (err) {
+        showError("Failed to delete the blog.");
+        console.error("Error deleting blog:", err);
+      }
     }
   };
 
@@ -211,6 +273,14 @@ export default function BlogView() {
             >
               <ShareIcon className="w-4 h-4" /> Share
             </button>
+            {(isAuthor || isAdmin) && (
+              <button
+                onClick={handleMenuToggle}
+                className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+              >
+                <EllipsisVerticalIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -306,6 +376,43 @@ export default function BlogView() {
           </div>
         </div>
       )}
+      {/* Menu Portal */}
+      {openMenu &&
+        menuPosition &&
+        createPortal(
+          <div
+            ref={menuRef}
+            className="fixed z-50 w-36 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-800"
+            style={{
+              top: `${menuPosition.top}px`,
+              left: `${menuPosition.left}px`,
+            }}
+          >
+            {isAuthor && (
+              <button
+                onClick={() => {
+                  handleEdit();
+                  setOpenMenu(false);
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:bg-gray-100 dark:text-blue-400 dark:hover:bg-gray-700"
+              >
+                <PencilIcon className="w-4 h-4" /> Edit
+              </button>
+            )}
+            {isAdmin && (
+              <button
+                onClick={() => {
+                  handleDeleteBlog();
+                  setOpenMenu(false);
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"
+              >
+                <TrashIcon className="w-4 h-4" /> Delete
+              </button>
+            )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

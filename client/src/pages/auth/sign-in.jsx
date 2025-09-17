@@ -35,11 +35,15 @@ export function SignIn() {
         setError("Invalid email or password. Please try again.");
       }
     } catch (err) {
-      setError(
-        err.response?.data?.msg ||
-          err.response?.data?.error ||
-          "An error occurred during sign-in. Please try again."
-      );
+      if (err.response?.data?.suspended) {
+        navigate("/auth/suspended");
+      } else {
+        setError(
+          err.response?.data?.msg ||
+            err.response?.data?.error ||
+            "An error occurred during sign-in. Please try again."
+        );
+      }
       console.error(err);
     }
   };
@@ -52,16 +56,23 @@ export function SignIn() {
       if (photoURL && photoURL.includes("googleusercontent.com")) {
         photoURL = photoURL.split("=")[0] + "=s256-c";
       }
-      await AuthService.googleLogin({
+      const response = await AuthService.googleLogin({
         email: user.email,
         name: user.displayName,
         photoURL: photoURL,
-      }).then((response) => {
-        login(response.token);
-        const role = userRole() || "user";
-        navigate(role === "admin" ? "/admin/admin-home" : "/dashboard/Explore");
       });
+      login(response.token);
+      const role = userRole() || "user";
+      navigate(role === "admin" ? "/admin/admin-home" : "/dashboard/Explore");
     } catch (error) {
+      if (error.response?.data?.suspended) {
+        navigate("/auth/suspended");
+      } else {
+        setError(
+          error.response?.data?.msg ||
+            "An error occurred during Google sign-in."
+        );
+      }
       console.error("Login error:", error);
     }
   };

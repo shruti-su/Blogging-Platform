@@ -87,14 +87,25 @@ function UserManagement() {
     });
   }, [fileRecords, globalFilter]);
 
+  const getUserStatus = (user) => {
+    if (user.suspended) return "Suspended";
+    if (user.isActive) return "Active";
+    return "Inactive";
+  };
+
   const sortedRecords = useMemo(() => {
     let sortableItems = [...filteredRecords];
     if (sortConfig !== null) {
       sortableItems.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
+        const keyA =
+          sortConfig.key === "status" ? getUserStatus(a) : a[sortConfig.key];
+        const keyB =
+          sortConfig.key === "status" ? getUserStatus(b) : b[sortConfig.key];
+
+        if (keyA < keyB) {
           return sortConfig.direction === "ascending" ? -1 : 1;
         }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
+        if (keyA > keyB) {
           return sortConfig.direction === "ascending" ? 1 : -1;
         }
         return 0;
@@ -192,6 +203,14 @@ function UserManagement() {
     </button>
   );
 
+  const headerConfig = [
+    { label: "User Name", key: "name" },
+    { label: "Email", key: "email" },
+    { label: "Role", key: "role" },
+    { label: "Status", key: "status" },
+    { label: "Actions", key: null, sortable: false },
+  ];
+
   return (
     <div className="p-6 mt-9">
       <div className="font-bold text-center flex flex-col items-center justify-center w-full">
@@ -218,18 +237,13 @@ function UserManagement() {
         <table className="w-full border-collapse">
           <thead className="bg-gradient-to-r from-purple-600 to-indigo-600">
             <tr>
-              {["User Name", "Email", "Role", "Actions"].map((header, idx) => (
+              {headerConfig.map(({ label, key, sortable = true }) => (
                 <th
-                  key={idx}
-                  onClick={
-                    header !== "Actions"
-                      ? () => requestSort(header.toLowerCase().replace(" ", ""))
-                      : undefined
-                  }
+                  key={label}
+                  onClick={sortable ? () => requestSort(key) : undefined}
                   className="px-6 py-4 text-sm font-bold tracking-wider text-white uppercase text-center cursor-pointer"
                 >
-                  {header}{" "}
-                  {header !== "Actions" && getSortIcon(header.toLowerCase())}
+                  {label} {sortable && getSortIcon(key)}
                 </th>
               ))}
             </tr>
@@ -256,6 +270,23 @@ function UserManagement() {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-center">
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                      user.suspended
+                        ? "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300"
+                        : user.isActive
+                        ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
+                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300"
+                    }`}
+                  >
+                    {user.suspended
+                      ? "Suspended"
+                      : user.isActive
+                      ? "Active"
+                      : "Inactive"}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-center">
                   {editButtonTemplate(user)}
                 </td>
               </tr>
@@ -263,7 +294,7 @@ function UserManagement() {
             {paginatedRecords.length === 0 && (
               <tr>
                 <td
-                  colSpan="4"
+                  colSpan="5"
                   className="px-6 py-6 text-center text-gray-500 dark:text-gray-400 text-lg"
                 >
                   No users found.
@@ -289,9 +320,26 @@ function UserManagement() {
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   {user.email}
                 </p>
-                <span className="mt-2 inline-block px-3 py-1 text-xs font-semibold text-purple-700 bg-purple-100 rounded-full dark:bg-purple-900/40 dark:text-purple-300 capitalize">
-                  {user.role}
-                </span>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="inline-block px-3 py-1 text-xs font-semibold text-purple-700 bg-purple-100 rounded-full dark:bg-purple-900/40 dark:text-purple-300 capitalize">
+                    {user.role}
+                  </span>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      user.suspended
+                        ? "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300"
+                        : user.isActive
+                        ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
+                        : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300"
+                    }`}
+                  >
+                    {user.suspended
+                      ? "Suspended"
+                      : user.isActive
+                      ? "Active"
+                      : "Inactive"}
+                  </span>
+                </div>
               </div>
               <div className="flex gap-2">{editButtonTemplate(user)}</div>
             </div>
@@ -446,6 +494,24 @@ function UserManagement() {
               />
             </div>
 
+            {/* Suspended Checkbox */}
+            <div className="flex items-center gap-3 pt-2">
+              <input
+                id="suspended"
+                type="checkbox"
+                checked={editingUser.suspended || false}
+                onChange={(e) =>
+                  handleEditChange("suspended", e.target.checked)
+                }
+                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              />
+              <label
+                htmlFor="suspended"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Account Suspended
+              </label>
+            </div>
             {/* Buttons */}
             <div className="flex justify-end gap-4 pt-6">
               <button

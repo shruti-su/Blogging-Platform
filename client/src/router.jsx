@@ -21,6 +21,7 @@ import BlogView from "@/pages/dashboard/blog/blog-view";
 import BlogEditPage from "@/pages/dashboard/blog/blog-edit";
 import AllUsersPage from "@/pages/dashboard/all-users";
 import { UserProfilePage } from "@/pages/dashboard/user-profile";
+import SuspendedPage from "@/pages/auth/suspended";
 
 const icon = {
   className: "w-6 h-6 text-inherit",
@@ -212,6 +213,13 @@ export const routes = [
         name: "blog-viewer",
         path: "/blog-viewer/:id",
         element: <BlogView />,
+        sidebar: false,
+      },
+      {
+        icon: <UserCircleIcon {...icon} />,
+        name: "blog-viewer",
+        path: "/suspended",
+        element: <SuspendedPage />,
         sidebar: false,
       },
     ],

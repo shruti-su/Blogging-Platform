@@ -32,6 +32,11 @@ exports.login = async (req, res) => {
             return res.status(400).json({ msg: 'Invalid Credentials' }); // Use generic message for security
         }
 
+        // Check if the user is suspended
+        if (user.suspended) {
+            return res.status(403).json({ msg: 'Your account has been suspended.', suspended: true });
+        }
+
         // Compare entered password with hashed password in DB
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
@@ -224,6 +229,11 @@ exports.googleLogin = async (req, res) => {
         if (user) { // If user exists, create JWT and return it
             // If user logs in with Google, update profile picture if it's different
 
+            // Check if the user is suspended
+            if (user.suspended) {
+                return res.status(403).json({ msg: 'Your account has been suspended.', suspended: true });
+            }
+
             // Log the successful login activity
             const loginActivity = new LoginActivity({ user: user.id });
             await loginActivity.save();
@@ -368,6 +378,10 @@ exports.getCurrentUser = async (req, res) => {
         const user = await User.findById(req.user.id).select('-password');
         if (!user) {
             return res.status(404).json({ msg: 'User not found' });
+        }
+        if (user.suspended) {
+            // Log out on client side by sending an error
+            return res.status(403).json({ msg: 'Your account has been suspended.', suspended: true });
         }
         res.json(user);
     } catch (err) {

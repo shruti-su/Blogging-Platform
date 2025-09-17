@@ -69,11 +69,15 @@ exports.deleteUser = async (req, res) => {
  * Updates a user's information by ID.
  */
 exports.updateUser = async (req, res) => {
-    const { name, email, role } = req.body;
+    const { name, email, role, suspended } = req.body;
     const updatedData = { name, email, role };
 
     if (!name || !email || !role) {
         return res.status(400).json({ msg: 'Please provide name, email, and role.' });
+    }
+
+    if (typeof suspended === 'boolean') {
+        updatedData.suspended = suspended;
     }
 
     try {

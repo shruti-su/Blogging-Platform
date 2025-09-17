@@ -3,6 +3,9 @@ const Blog = require("../models/blogs");
 const Follow = require("../models/Follow");
 const mongoose = require("mongoose");
 const User = require("../models/User");
+const Comment = require("../models/comment");
+const Vote = require("../models/vote");
+const Report = require("../models/Report");
 
 exports.addBlog = async (req, res) => {
     const errors = validationResult(req);
@@ -45,38 +48,38 @@ exports.addBlog = async (req, res) => {
 };
 
 exports.getUserBlogCounts = async (req, res) => {
-  try {
-    const userBlogCounts = await User.aggregate([
-      {
-        // Stage 1: Use $lookup to join with the blogs collection
-        $lookup: {
-          from: "blogs", // The name of the blogs collection in MongoDB
-          localField: "_id",
-          foreignField: "author",
-          as: "blogs",
-        },
-      },
-      {
-        // Stage 2: Reshape the documents with the required fields
-        $project: {
-          _id: 1,
-          name: 1,
-          email: 1,
-          role: 1,
-          blogCount: { $size: "$blogs" }, // Count the number of blogs
-        },
-      },
-      {
-        // Stage 3: Sort the results by name
-        $sort: { name: 1 },
-      },
-    ]);
+    try {
+        const userBlogCounts = await User.aggregate([
+            {
+                // Stage 1: Use $lookup to join with the blogs collection
+                $lookup: {
+                    from: "blogs", // The name of the blogs collection in MongoDB
+                    localField: "_id",
+                    foreignField: "author",
+                    as: "blogs",
+                },
+            },
+            {
+                // Stage 2: Reshape the documents with the required fields
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    email: 1,
+                    role: 1,
+                    blogCount: { $size: "$blogs" }, // Count the number of blogs
+                },
+            },
+            {
+                // Stage 3: Sort the results by name
+                $sort: { name: 1 },
+            },
+        ]);
 
-    res.status(200).json(userBlogCounts);
-  } catch (err) {
-    console.error("Error fetching user blog counts:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
+        res.status(200).json(userBlogCounts);
+    } catch (err) {
+        console.error("Error fetching user blog counts:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
 };
 
 exports.getAllBlogs = async (req, res) => {
@@ -206,11 +209,19 @@ exports.deleteBlog = async (req, res) => {
         }
 
         // Check if the user owns the blog
-        if (blog.author.toString() !== req.user.id) {
+        if (blog.author.toString() !== req.user.id && req.user.role !== 'admin') {
             return res.status(401).json({ error: "User not authorized to delete this blog." });
         }
 
         await blog.deleteOne();
+        // Delete all associated comments
+        await Comment.deleteMany({ blog: blogId });
+        // Delete all associated votes
+        await Vote.deleteMany({ blog: blogId });
+        // Delete all associated reports
+        await Report.deleteMany({ blog: blogId });
+
+
         res.status(200).json({ message: "Blog deleted successfully!" });
 
     } catch (err) {
